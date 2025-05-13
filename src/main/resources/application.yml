@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: @spring.profiles.active@
   application:
     name: unit
   # ===================================================================
@@ -69,5 +71,3 @@ management:
       show-details: always
       probes:
         enabled: true
-server:
-  port: 8083
