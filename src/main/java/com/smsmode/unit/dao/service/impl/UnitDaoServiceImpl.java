@@ -1,0 +1,53 @@
+/**
+ * <p>Copyright (C) Calade Technologies, Inc - All Rights Reserved Unauthorized copying of this
+ * file, via any medium is strictly prohibited Proprietary and confidential
+ */
+package com.smsmode.unit.dao.service.impl;
+
+import com.smsmode.unit.dao.repository.UnitRepository;
+import com.smsmode.unit.dao.service.UnitDaoService;
+import com.smsmode.unit.exception.ResourceNotFoundException;
+import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
+import com.smsmode.unit.model.UnitModel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+/**
+ * TODO: add your documentation
+ *
+ * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
+ * <p>Created 11 Apr 2025</p>
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UnitDaoServiceImpl implements UnitDaoService {
+
+    private final UnitRepository unitRepository;
+
+
+    @Override
+    public UnitModel save(UnitModel unitModel) {
+        return unitRepository.save(unitModel);
+    }
+
+    @Override
+    public Page<UnitModel> findAllBy(Specification<UnitModel> specification, Pageable pageable) {
+        return unitRepository.findAll(specification, pageable);
+    }
+
+    @Override
+    public UnitModel findOneBy(Specification<UnitModel> specification) {
+        return unitRepository.findOne(specification).orElseThrow(
+                () -> {
+                    log.debug("Couldn't find any unit with the specified criteria");
+                    return new ResourceNotFoundException(
+                            ResourceNotFoundExceptionTitleEnum.UNIT_NOT_FOUND,
+                            "No unit found with the specified criteria");
+                });
+    }
+}
