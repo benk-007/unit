@@ -8,8 +8,10 @@ import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.model.base.AbstractBaseModel;
 import com.smsmode.unit.resource.common.AuditGetResource;
 import com.smsmode.unit.resource.unit.UnitGetResource;
+import com.smsmode.unit.resource.unit.UnitInfosPatchResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
+import com.smsmode.unit.resource.unit.infos.UnitInfosGetResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 
@@ -43,4 +45,13 @@ public abstract class UnitMapper {
     }
 
     public abstract AuditGetResource modelToAuditResource(AbstractBaseModel baseModel);
+
+    public abstract UnitModel infosPatchResourceToModel(UnitInfosPatchResource unitInfosPatchResource, @MappingTarget UnitModel unit);
+
+    public abstract UnitInfosGetResource modelToInfosGetResource(UnitModel unit);
+
+    @AfterMapping
+    public void afterModelToInfosGetResource(UnitModel unit, @MappingTarget UnitInfosGetResource unitInfosGetResource) {
+        unitInfosGetResource.setAudit(this.modelToAuditResource(unit));
+    }
 }

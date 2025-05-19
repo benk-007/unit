@@ -33,26 +33,27 @@ public class UnitModel extends AbstractBaseModel {
     @Embedded
     private ContactEmbeddable contact;
     private boolean readiness = false;
+    private String calendarColor;
     @Enumerated(EnumType.STRING)
     private UnitTypeEnum type = UnitTypeEnum.SINGLE;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name="adults",
-                    column=@Column(name="MIN_ADULTS")),
-            @AttributeOverride(name="children",
-                    column=@Column(name="MIN_CHILDREN")),
-            @AttributeOverride(name="infants",
-                    column=@Column(name="MIN_INFANTS"))
+            @AttributeOverride(name = "adults",
+                    column = @Column(name = "MIN_ADULTS")),
+            @AttributeOverride(name = "children",
+                    column = @Column(name = "MIN_CHILDREN")),
+            @AttributeOverride(name = "infants",
+                    column = @Column(name = "MIN_INFANTS"))
     })
     private OccupancyEmbeddable minOccupancy;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name="adults",
-                    column=@Column(name="MAX_ADULTS")),
-            @AttributeOverride(name="children",
-                    column=@Column(name="MAX_CHILDREN")),
-            @AttributeOverride(name="infants",
-                    column=@Column(name="MAX_INFANTS"))
+            @AttributeOverride(name = "adults",
+                    column = @Column(name = "MAX_ADULTS")),
+            @AttributeOverride(name = "children",
+                    column = @Column(name = "MAX_CHILDREN")),
+            @AttributeOverride(name = "infants",
+                    column = @Column(name = "MAX_INFANTS"))
     })
     private OccupancyEmbeddable maxOccupancy;
 

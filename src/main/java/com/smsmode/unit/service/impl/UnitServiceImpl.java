@@ -56,7 +56,6 @@ public class UnitServiceImpl implements UnitService {
     @Override
     public ResponseEntity<UnitGetResource> retrieveById(String unitId) {
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
-
         return ResponseEntity.ok(unitMapper.modelToGetResource(unit));
     }
 }
