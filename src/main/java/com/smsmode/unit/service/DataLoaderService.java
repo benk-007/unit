@@ -4,22 +4,13 @@
  */
 package com.smsmode.unit.service;
 
-import com.smsmode.unit.model.ImageModel;
-
-import java.io.InputStream;
-
 /**
  * TODO: add your documentation
  *
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
- * <p>Created 28 Apr 2025</p>
+ * <p>Created 31 May 2025</p>
  */
-public interface StorageService {
+public interface DataLoaderService {
 
-    String storeFile(String path, InputStream inputStream);
-
-    void deleteFile(String path);
-
-    String generateUnitImagePath(ImageModel image);
-
+    void populateUnits();
 }

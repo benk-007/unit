@@ -19,3 +19,8 @@ spring:
   rabbitmq:
     host: rabbitmq
     port: 5672
+
+file:
+  upload:
+    root: ./Projects/xStay/upload-folder
+    unit-image: ./units/:unitId/images

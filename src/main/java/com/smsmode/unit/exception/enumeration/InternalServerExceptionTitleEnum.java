@@ -4,30 +4,29 @@
  */
 package com.smsmode.unit.exception.enumeration;
 
+
 /**
- * Enum representing titles for resource not found exceptions. Each enum constant should provide a
- * unique code for identifying the exception type.
+ * Enum representing titles for authentication unauthorized exceptions. Each enum constant should
+ * provide a unique code for identifying the exception type.
  *
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
  * <p>Created 09 Oct 2024
  */
-public enum ResourceNotFoundExceptionTitleEnum implements BaseExceptionEnum {
-
+public enum InternalServerExceptionTitleEnum implements BaseExceptionEnum {
     /**
-     * Resource not found exception title: Unit not found.
+     * Not authorized exception title.
      */
-    UNIT_NOT_FOUND("UNT_RNF_ERR_1"),
-    IMAGE_NOT_FOUND("UNT_RNF_ERR_2");
+    FILE_UPLOAD("UNT_INT_SRV_ERR_1");
 
 
     private final String code;
 
     /**
-     * Constructs a ResourceNotFoundExceptionTitleEnum with the specified code.
+     * Constructs an AuthenticationUnauthorizedExceptionTitleEnum with the specified code.
      *
      * @param code A string code identifying the exception type.
      */
-    ResourceNotFoundExceptionTitleEnum(String code) {
+    InternalServerExceptionTitleEnum(String code) {
         this.code = code;
     }
 

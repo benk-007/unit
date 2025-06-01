@@ -9,3 +9,8 @@ spring:
     password: mysecretpassword
 server:
   port: 8083
+
+file:
+  upload:
+    root: ${user.home}/Projects/xStay/upload-folder
+    unit-image: ${file.upload.root}/units/:unitId/images

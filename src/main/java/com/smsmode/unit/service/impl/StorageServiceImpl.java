@@ -4,8 +4,10 @@
  */
 package com.smsmode.unit.service.impl;
 
+import com.smsmode.unit.model.ImageModel;
 import com.smsmode.unit.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -26,6 +28,8 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class StorageServiceImpl implements StorageService {
 
+    @Value("${file.upload.unit-image}")
+    private String imageUploadPath;
 
     public String storeFile(String path, InputStream inputStream) {
         Path originalFilePath = Paths.get(path);
@@ -57,5 +61,12 @@ public class StorageServiceImpl implements StorageService {
         } else {
             log.warn("File: '{}' does not exists.", path);
         }
+    }
+
+    @Override
+    public String generateUnitImagePath(ImageModel image) {
+        String extension = image.getFileName().substring(image.getFileName().lastIndexOf("."));
+        return this.imageUploadPath.replace(":unitId", image.getUnit().getId()).concat("/").concat(image.getId()).concat(extension);
+
     }
 }
