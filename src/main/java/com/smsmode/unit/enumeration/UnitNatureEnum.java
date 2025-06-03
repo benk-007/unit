@@ -10,7 +10,7 @@ package com.smsmode.unit.enumeration;
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
  * <p>Created 11 Apr 2025</p>
  */
-public enum UnitTypeEnum {
+public enum UnitNatureEnum {
     SINGLE,
     MULTI_UNIT
 }

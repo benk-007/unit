@@ -7,7 +7,7 @@ package com.smsmode.unit.model;
 import com.smsmode.unit.embeddable.AddressEmbeddable;
 import com.smsmode.unit.embeddable.ContactEmbeddable;
 import com.smsmode.unit.embeddable.OccupancyEmbeddable;
-import com.smsmode.unit.enumeration.UnitTypeEnum;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.model.base.AbstractBaseModel;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class UnitModel extends AbstractBaseModel {
     private boolean readiness = false;
     private String calendarColor;
     @Enumerated(EnumType.STRING)
-    private UnitTypeEnum type = UnitTypeEnum.SINGLE;
+    private UnitNatureEnum nature = UnitNatureEnum.SINGLE;
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "adults",
