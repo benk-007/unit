@@ -4,6 +4,7 @@
  */
 package com.smsmode.unit.mapper;
 
+import com.smsmode.unit.model.RoomModel;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.model.base.AbstractBaseModel;
 import com.smsmode.unit.resource.common.AuditGetResource;
@@ -11,6 +12,9 @@ import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitInfosPatchResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
+import com.smsmode.unit.resource.unit.details.RoomPatchResource;
+import com.smsmode.unit.resource.unit.details.UnitDetailsGetResource;
+import com.smsmode.unit.resource.unit.details.UnitDetailsPatchResource;
 import com.smsmode.unit.resource.unit.infos.UnitInfosGetResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
@@ -54,4 +58,15 @@ public abstract class UnitMapper {
     public void afterModelToInfosGetResource(UnitModel unit, @MappingTarget UnitInfosGetResource unitInfosGetResource) {
         unitInfosGetResource.setAudit(this.modelToAuditResource(unit));
     }
+
+    public abstract UnitDetailsGetResource modelToDetailsGetResource(UnitModel unit);
+
+    @Mapping(target = "rooms", ignore = true)
+    public abstract UnitModel detailsPatchResourceToModel(UnitDetailsPatchResource unitDetailsPatchResource, @MappingTarget UnitModel unit);
+
+    @Mapping(target = "unit", ignore = true)
+    public abstract RoomModel roomPatchResourceToModel(RoomPatchResource room);
+
+    @Mapping(target = "unit", ignore = true)
+    public abstract RoomModel roomPatchResourceToModel(RoomPatchResource room, @MappingTarget RoomModel roomModel);
 }
