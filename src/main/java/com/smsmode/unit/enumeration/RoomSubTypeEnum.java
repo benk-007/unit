@@ -8,12 +8,17 @@ package com.smsmode.unit.enumeration;
  * TODO: add your documentation
  *
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
- * <p>Created 07 Jun 2025</p>
+ * <p>Created 15 Jun 2025</p>
  */
-public enum RoomTypeEnum {
-    BEDROOM,
-    BATHROOM,
-    KITCHEN,
-    LIVING,
-    GENERAL
+public enum RoomSubTypeEnum {
+    LIVING_ROOM,
+    BED_IN_LIVING_ROOM,
+    MASTER,
+    CHILDREN,
+    GUEST,
+    FULL,
+    HALF,
+    THREE_QUARTER,
+    QUARTER,
+    KITCHENETTE
 }

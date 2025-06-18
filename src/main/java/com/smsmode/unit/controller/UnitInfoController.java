@@ -4,7 +4,6 @@
  */
 package com.smsmode.unit.controller;
 
-import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitInfosPatchResource;
 import com.smsmode.unit.resource.unit.infos.UnitInfosGetResource;
 import org.springframework.http.ResponseEntity;

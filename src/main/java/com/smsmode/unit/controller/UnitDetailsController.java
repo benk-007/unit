@@ -4,10 +4,8 @@
  */
 package com.smsmode.unit.controller;
 
-import com.smsmode.unit.resource.unit.UnitInfosPatchResource;
 import com.smsmode.unit.resource.unit.details.UnitDetailsGetResource;
 import com.smsmode.unit.resource.unit.details.UnitDetailsPatchResource;
-import com.smsmode.unit.resource.unit.infos.UnitInfosGetResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

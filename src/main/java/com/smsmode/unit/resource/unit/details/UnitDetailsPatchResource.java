@@ -33,7 +33,6 @@ public class UnitDetailsPatchResource {
     private Boolean eventsAllowed;
     private Boolean smokingAllowed;
     private Boolean petsAllowed;
-    private List<RoomPatchResource> rooms;
     private Set<AmenityEnum> amenities;
 
 }

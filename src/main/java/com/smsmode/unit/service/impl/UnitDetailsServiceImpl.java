@@ -48,7 +48,7 @@ public class UnitDetailsServiceImpl implements UnitDetailsService {
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
         unit = unitMapper.detailsPatchResourceToModel(unitDetailsPatchResource, unit);
         //Rooms handling logic
-        if (!CollectionUtils.isEmpty(unitDetailsPatchResource.getRooms())) {
+/*        if (!CollectionUtils.isEmpty(unitDetailsPatchResource.getRooms())) {
             unit.removeAllRooms();
             for (RoomPatchResource room : unitDetailsPatchResource.getRooms()) {
                 //new room
@@ -63,7 +63,7 @@ public class UnitDetailsServiceImpl implements UnitDetailsService {
                     unit.addRoom(roomModel);
                 }
             }
-        }
+        }*/
 
         unit = unitDaoService.save(unit);
         return ResponseEntity.ok(unitMapper.modelToDetailsGetResource(unit));

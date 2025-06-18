@@ -5,10 +5,11 @@
 package com.smsmode.unit.model;
 
 import com.smsmode.unit.embeddable.BedEmbeddable;
+import com.smsmode.unit.enumeration.FloorSizeUnitEnum;
+import com.smsmode.unit.enumeration.RoomSubTypeEnum;
 import com.smsmode.unit.enumeration.RoomTypeEnum;
 import com.smsmode.unit.model.base.AbstractBaseModel;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,16 +30,31 @@ import java.util.List;
 @Table(name = "X_ROOM")
 public class RoomModel extends AbstractBaseModel {
 
+    @Column(name = "NAME")
+    private String name;
     @Enumerated(EnumType.STRING)
+    @Column(name = "TYPE")
     private RoomTypeEnum type;
-    private Integer bathroom;
+    @Column(name = "SUB_TYPE")
+    @Enumerated(EnumType.STRING)
+    private RoomSubTypeEnum subType;
+    @Column(name = "FLOOR_SIZE")
     private Integer floorSize;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "FLOOR_SIZE_UNIT")
+    private FloorSizeUnitEnum floorSizeUnit = FloorSizeUnitEnum.SQM;
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BATHROOM_ID")
+    private RoomModel bathroom;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "X_BEDDING", joinColumns = @JoinColumn(name = "room_id"))
+    @CollectionTable(name = "X_BEDDING", joinColumns = @JoinColumn(name = "ROOM_ID"))
     private List<BedEmbeddable> beds = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "unit_id")
+    @JoinColumn(name = "UNIT_ID")
     private UnitModel unit;
 }

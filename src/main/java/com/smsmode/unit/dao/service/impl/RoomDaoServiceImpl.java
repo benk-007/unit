@@ -11,6 +11,8 @@ import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum
 import com.smsmode.unit.model.RoomModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +38,25 @@ public class RoomDaoServiceImpl implements RoomDaoService {
                             ResourceNotFoundExceptionTitleEnum.ROOM_NOT_FOUND,
                             "No room found with the specified criteria");
                 });
+    }
+
+    @Override
+    public Page<RoomModel> findAllBy(Specification<RoomModel> specification, Pageable pageable) {
+        return roomRepository.findAll(specification, pageable);
+    }
+
+    @Override
+    public RoomModel save(RoomModel roomModel) {
+        return roomRepository.save(roomModel);
+    }
+
+    @Override
+    public void deleteBy(Specification<RoomModel> specification) {
+        roomRepository.delete(specification);
+    }
+
+    @Override
+    public void delete(RoomModel room) {
+        roomRepository.delete(room);
     }
 }

@@ -34,6 +34,5 @@ public class UnitDetailsGetResource {
     private boolean eventsAllowed;
     private boolean smokingAllowed;
     private boolean petsAllowed;
-    private List<RoomGetModel> rooms;
     private Set<AmenityEnum> amenities;
 }

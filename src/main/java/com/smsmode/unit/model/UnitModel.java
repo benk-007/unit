@@ -18,8 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -76,26 +74,7 @@ public class UnitModel extends AbstractBaseModel {
     })
     private OccupancyEmbeddable maxOccupancy = new OccupancyEmbeddable();
 
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<RoomModel> rooms = new ArrayList<>();
-
     @Convert(converter = AmenityEnumSetToStringConverter.class)
     private Set<AmenityEnum> amenities;
-
-    // Add/remove helper methods for consistency
-    public void addRoom(RoomModel room) {
-        rooms.add(room);
-        room.setUnit(this);
-    }
-
-    public void removeRoom(RoomModel room) {
-        rooms.remove(room);
-        room.setUnit(null);
-    }
-
-    public void removeAllRooms() {
-        rooms.forEach(room -> room.setUnit(null));
-        rooms.clear();
-    }
 
 }

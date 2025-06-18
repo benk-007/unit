@@ -5,6 +5,8 @@
 package com.smsmode.unit.dao.service;
 
 import com.smsmode.unit.model.RoomModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -16,4 +18,13 @@ import org.springframework.data.jpa.domain.Specification;
 public interface RoomDaoService {
 
     RoomModel findOneBy(Specification<RoomModel> specification);
+
+    Page<RoomModel> findAllBy(Specification<RoomModel> specification, Pageable unpaged);
+
+    RoomModel save(RoomModel roomModel);
+
+    void deleteBy(Specification<RoomModel> specification);
+
+    void delete(RoomModel room);
+
 }
