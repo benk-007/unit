@@ -7,6 +7,7 @@ package com.smsmode.unit.model;
 import com.smsmode.unit.embeddable.AddressEmbeddable;
 import com.smsmode.unit.embeddable.ContactEmbeddable;
 import com.smsmode.unit.embeddable.OccupancyEmbeddable;
+import com.smsmode.unit.embeddable.RateEmbeddable;
 import com.smsmode.unit.enumeration.AmenityEnum;
 import com.smsmode.unit.enumeration.FloorSizeUnitEnum;
 import com.smsmode.unit.enumeration.UnitNatureEnum;
@@ -77,4 +78,6 @@ public class UnitModel extends AbstractBaseModel {
     @Convert(converter = AmenityEnumSetToStringConverter.class)
     private Set<AmenityEnum> amenities;
 
+    @Embedded
+    private RateEmbeddable defaultRate;
 }
