@@ -4,7 +4,6 @@
  */
 package com.smsmode.unit.resource.unit.rate;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
