@@ -47,18 +47,16 @@ public class UnitRateServiceImpl implements UnitRateService {
 
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
 
-        RateEmbeddable updatedRate;
         if (unit.getDefaultRate() == null) {
-            // Create new rate if none exists
-            updatedRate = rateMapper.patchResourceToNewEmbeddable(patchResource);
+            // Création : nouveau rate
+            RateEmbeddable newRate = rateMapper.patchResourceToNewEmbeddable(patchResource);
+            unit.setDefaultRate(newRate);
         } else {
-            // Update existing rate
-            updatedRate = rateMapper.patchResourceToEmbeddable(patchResource, unit.getDefaultRate());
+            // utilise MapStruct avec SET_TO_NULL
+            rateMapper.patchResourceToEmbeddable(patchResource, unit.getDefaultRate());
         }
 
-        unit.setDefaultRate(updatedRate);
         unit = unitDaoService.save(unit);
-
         DefaultRateGetResource response = rateMapper.embeddableToDefaultRateGetResource(unit.getDefaultRate());
         return ResponseEntity.ok(response);
     }
