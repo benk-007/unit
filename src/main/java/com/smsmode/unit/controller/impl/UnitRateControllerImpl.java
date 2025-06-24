@@ -6,6 +6,7 @@ package com.smsmode.unit.controller.impl;
 
 import com.smsmode.unit.controller.UnitRateController;
 import com.smsmode.unit.resource.unit.rate.DefaultRateGetResource;
+import com.smsmode.unit.resource.unit.rate.DefaultRatePatchResource;
 import com.smsmode.unit.service.UnitRateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,10 @@ public class UnitRateControllerImpl implements UnitRateController {
     @Override
     public ResponseEntity<DefaultRateGetResource> getDefaultRate(String unitId) {
         return unitRateService.retrieveDefaultRate(unitId);
+    }
+
+    @Override
+    public ResponseEntity<DefaultRateGetResource> patchDefaultRate(String unitId, DefaultRatePatchResource patchResource) {
+        return unitRateService.updateDefaultRate(unitId, patchResource);
     }
 }

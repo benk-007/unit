@@ -24,8 +24,8 @@ public class DefaultRateGetResource {
     private BigDecimal weekendNight;
     private BigDecimal weekly;
     private BigDecimal monthly;
-    private int minStay;
-    private int maxStay;
+    private Integer minStay;
+    private Integer maxStay;
     private BigDecimal feePPPN;
-    private int guestCount;
+    private Integer guestCount;
 }

@@ -5,6 +5,7 @@
 package com.smsmode.unit.controller;
 
 import com.smsmode.unit.resource.unit.rate.DefaultRateGetResource;
+import com.smsmode.unit.resource.unit.rate.DefaultRatePatchResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,4 +26,15 @@ public interface UnitRateController {
      */
     @GetMapping("/default")
     ResponseEntity<DefaultRateGetResource> getDefaultRate(@PathVariable("unitId") String unitId);
+
+    /**
+     * Updates the default rate for a specific unit.
+     *
+     * @param unitId the unit identifier
+     * @param patchResource the rate information to update
+     * @return ResponseEntity containing the updated default rate information
+     */
+    @PatchMapping("/default")
+    ResponseEntity<DefaultRateGetResource> patchDefaultRate(@PathVariable("unitId") String unitId, @RequestBody DefaultRatePatchResource patchResource);
+
 }
