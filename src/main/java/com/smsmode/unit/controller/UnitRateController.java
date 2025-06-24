@@ -20,19 +20,12 @@ public interface UnitRateController {
 
     /**
      * Retrieves the default rate for a specific unit.
-     *
-     * @param unitId the unit identifier
-     * @return ResponseEntity containing the default rate information
      */
     @GetMapping("/default")
     ResponseEntity<DefaultRateGetResource> getDefaultRate(@PathVariable("unitId") String unitId);
 
     /**
      * Updates the default rate for a specific unit.
-     *
-     * @param unitId the unit identifier
-     * @param patchResource the rate information to update
-     * @return ResponseEntity containing the updated default rate information
      */
     @PatchMapping("/default")
     ResponseEntity<DefaultRateGetResource> patchDefaultRate(@PathVariable("unitId") String unitId, @RequestBody DefaultRatePatchResource patchResource);
