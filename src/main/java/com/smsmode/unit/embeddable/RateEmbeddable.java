@@ -5,6 +5,8 @@
 package com.smsmode.unit.embeddable;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,13 +26,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RateEmbeddable {
+    @Embedded
+    @Valid
+    private RentalBaseRateEmbeddable rentalBaseRate;
 
-    private BigDecimal nightly;
-    private BigDecimal weekendNight;
-    private BigDecimal weekly;
-    private BigDecimal monthly;
-    private Integer minStay;
-    private Integer maxStay;
-    private BigDecimal feePPPN;
-    private Integer guestCount;
+    @Embedded
+    @Valid
+    private AdditionalGuestFeeEmbeddable additionalGuestFee;
 }

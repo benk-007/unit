@@ -4,9 +4,8 @@
  */
 package com.smsmode.unit.resource.unit.rate;
 
+import jakarta.validation.Valid;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 /**
  * Resource representing default rate information for a unit in PATCH requests.
@@ -17,12 +16,9 @@ import java.math.BigDecimal;
 @Data
 public class DefaultRatePatchResource {
 
-    private BigDecimal nightly;
-    private BigDecimal weekendNight;
-    private BigDecimal weekly;
-    private BigDecimal monthly;
-    private Integer minStay;
-    private Integer maxStay;
-    private BigDecimal feePPPN;
-    private Integer guestCount;
+    @Valid
+    private RentalBaseRatePatchResource rentalBaseRate;
+
+    @Valid
+    private AdditionalGuestFeePatchResource additionalGuestFee;
 }

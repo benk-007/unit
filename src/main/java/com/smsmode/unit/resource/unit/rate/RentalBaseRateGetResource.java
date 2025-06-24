@@ -5,19 +5,23 @@
 package com.smsmode.unit.resource.unit.rate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.Valid;
 import lombok.Data;
 
 /**
- * Resource representing default rate information for a unit in GET responses.
+ * Resource representing rental base rate information in GET responses.
+ * Contains nightly, weekly, monthly rates and stay duration constraints.
  *
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
  * <p>Created [current date]</p>
  */
 @Data
 @JsonInclude(JsonInclude.Include.ALWAYS)
-public class DefaultRateGetResource {
-    private RentalBaseRateGetResource rentalBaseRate;
-    private AdditionalGuestFeeGetResource additionalGuestFee;
+public class RentalBaseRateGetResource {
 
+    private Integer nightly;
+    private Integer weekendNight;
+    private Integer weekly;
+    private Integer monthly;
+    private Integer minStay;
+    private Integer maxStay;
 }
