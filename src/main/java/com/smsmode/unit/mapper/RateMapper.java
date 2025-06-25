@@ -86,21 +86,12 @@ public abstract class RateMapper {
     // POST-MAPPING METHODS
 
     @AfterMapping
-    public void afterPostResourceToModel(RatePostResource ratePostResource, @MappingTarget RateModel rateModel) {
-        log.debug("Mapped rate table '{}' for period {} to {}",
-                rateModel.getRateName(),
-                rateModel.getFromDate(),
-                rateModel.getUntilDate());
-    }
-
-
-    @AfterMapping
     public void afterModelToGetResource(RateModel rateModel, @MappingTarget RateGetResource rateGetResource) {
         rateGetResource.setAudit(this.modelToAuditResource(rateModel));
     }
 
 
-    // PROTECTED IMPLEMENTATION - MapStruct Generated
+    // PROTECTED IMPLEMENTATION - MapStruct Generated pour les mappings imbriqués (embeddables)
 
     protected abstract RentalBaseRateGetResource rentalBaseRateToGetResource(RentalBaseRateEmbeddable embeddable);
 
