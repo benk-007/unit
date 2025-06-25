@@ -99,6 +99,27 @@ public class RateServiceImpl implements RateService {
     }
 
 
+    @Override
+    public ResponseEntity<Void> delete(String rateId) {
+        log.debug("Deleting rate table with ID: '{}'", rateId);
+
+        // Validate rate table existence (throws ResourceNotFoundException if not found)
+        // This also serves as a business validation step
+        RateModel existingRateModel = rateDaoService.findOneBy(RateSpecification.withIdEqual(rateId));
+
+        log.debug("Rate table '{}' found, proceeding with deletion", existingRateModel.getRateName());
+
+        // Perform hard deletion via DAO service
+        rateDaoService.deleteBy(RateSpecification.withIdEqual(rateId));
+
+        log.info("Rate table '{}' deleted successfully with ID: {}",
+                existingRateModel.getRateName(), rateId);
+
+        // Return HTTP 204 No Content for successful deletion (REST standard)
+        return ResponseEntity.noContent().build();
+    }
+
+
     private void applyPartialUpdates(RatePatchResource ratePatchResource, RateModel existingRateModel) {
         // Update basic fields when provided (null-safe)
         if (ratePatchResource.getRateName() != null) {
@@ -143,5 +164,7 @@ public class RateServiceImpl implements RateService {
             );
         }
     }
+
+
 
 }

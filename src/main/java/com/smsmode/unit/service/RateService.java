@@ -19,4 +19,5 @@ public interface RateService {
 
     ResponseEntity<RateGetResource> update(String rateId, RatePatchResource ratePatchResource);
 
+    ResponseEntity<Void> delete(String rateId);
 }

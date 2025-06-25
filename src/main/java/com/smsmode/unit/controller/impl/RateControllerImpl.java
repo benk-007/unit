@@ -36,4 +36,9 @@ public class RateControllerImpl implements RateController {
     public ResponseEntity<RateGetResource> patchRate(String rateId, RatePatchResource ratePatchResource) {
         return rateService.update(rateId, ratePatchResource);
     }
+
+    @Override
+    public ResponseEntity<Void> deleteRate(String rateId) {
+        return rateService.delete(rateId);
+    }
 }

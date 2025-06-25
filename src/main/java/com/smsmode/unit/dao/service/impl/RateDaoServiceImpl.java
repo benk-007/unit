@@ -61,4 +61,13 @@ public class RateDaoServiceImpl implements RateDaoService {
                 });
     }
 
+
+    @Override
+    public void deleteBy(Specification<RateModel> specification) {
+        log.debug("Deleting rate tables with specified criteria");
+
+        rateRepository.delete(specification);
+
+        log.info("Rate tables deleted successfully using specification criteria");
+    }
 }

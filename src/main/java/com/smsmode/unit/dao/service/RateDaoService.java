@@ -16,4 +16,6 @@ public interface RateDaoService {
     Page<RateModel> findAllBy(Specification<RateModel> specification, Pageable pageable);
 
     RateModel findOneBy(Specification<RateModel> specification);
+
+    void deleteBy(Specification<RateModel> specification);
 }

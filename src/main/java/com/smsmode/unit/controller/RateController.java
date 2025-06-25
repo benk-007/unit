@@ -24,4 +24,7 @@ public interface RateController {
 
     @PatchMapping("/{rateId}")
     ResponseEntity<RateGetResource> patchRate(@PathVariable("rateId") String rateId, @RequestBody @Valid RatePatchResource ratePatchResource);
+
+    @DeleteMapping("/{rateId}")
+    ResponseEntity<Void> deleteRate(@PathVariable("rateId") String rateId);
 }
