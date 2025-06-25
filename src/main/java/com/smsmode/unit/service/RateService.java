@@ -4,6 +4,7 @@
  */
 package com.smsmode.unit.service;
 
+import com.smsmode.unit.resource.unit.rate.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
 import org.springframework.data.domain.Page;
@@ -15,4 +16,7 @@ public interface RateService {
     ResponseEntity<RateGetResource> create(RatePostResource ratePostResource);
 
     ResponseEntity<Page<RateGetResource>> retrieveAll(String search, Pageable pageable);
+
+    ResponseEntity<RateGetResource> update(String rateId, RatePatchResource ratePatchResource);
+
 }

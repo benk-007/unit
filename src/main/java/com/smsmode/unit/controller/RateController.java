@@ -5,6 +5,7 @@
 package com.smsmode.unit.controller;
 
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
+import com.smsmode.unit.resource.unit.rate.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -20,4 +21,7 @@ public interface RateController {
 
     @PostMapping
     ResponseEntity<RateGetResource> postRate(@RequestBody @Valid RatePostResource ratePostResource);
+
+    @PatchMapping("/{rateId}")
+    ResponseEntity<RateGetResource> patchRate(@PathVariable("rateId") String rateId, @RequestBody @Valid RatePatchResource ratePatchResource);
 }

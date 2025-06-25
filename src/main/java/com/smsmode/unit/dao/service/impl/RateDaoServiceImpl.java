@@ -6,6 +6,8 @@ package com.smsmode.unit.dao.service.impl;
 
 import com.smsmode.unit.dao.repository.RateRepository;
 import com.smsmode.unit.dao.service.RateDaoService;
+import com.smsmode.unit.exception.ResourceNotFoundException;
+import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
 import com.smsmode.unit.model.RateModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,17 @@ public class RateDaoServiceImpl implements RateDaoService {
                 ratePage.getTotalPages());
 
         return ratePage;
+    }
+
+    @Override
+    public RateModel findOneBy(Specification<RateModel> specification) {
+        return rateRepository.findOne(specification).orElseThrow(
+                () -> {
+                    log.debug("Couldn't find any rate table with the specified criteria");
+                    return new ResourceNotFoundException(
+                            ResourceNotFoundExceptionTitleEnum.RATE_NOT_FOUND,
+                            "No rate table found with the specified criteria");
+                });
     }
 
 }

@@ -14,4 +14,6 @@ public interface RateDaoService {
     RateModel save(RateModel rateModel);
 
     Page<RateModel> findAllBy(Specification<RateModel> specification, Pageable pageable);
+
+    RateModel findOneBy(Specification<RateModel> specification);
 }

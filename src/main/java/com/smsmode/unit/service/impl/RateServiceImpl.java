@@ -6,9 +6,11 @@ package com.smsmode.unit.service.impl;
 
 import com.smsmode.unit.dao.service.RateDaoService;
 import com.smsmode.unit.dao.specification.RateSpecification;
+import com.smsmode.unit.embeddable.RateEmbeddable;
 import com.smsmode.unit.mapper.RateMapper;
 import com.smsmode.unit.model.RateModel;
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
+import com.smsmode.unit.resource.unit.rate.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import com.smsmode.unit.service.RateService;
 import lombok.RequiredArgsConstructor;
@@ -72,4 +74,74 @@ public class RateServiceImpl implements RateService {
         // Return HTTP 200 OK with paginated results
         return ResponseEntity.ok(rateResourcesPage);
     }
+
+    @Override
+    public ResponseEntity<RateGetResource> update(String rateId, RatePatchResource ratePatchResource) {
+        log.debug("Updating rate table with ID: '{}'", rateId);
+
+        // Retrieve existing rate table (throws ResourceNotFoundException if not found)
+        RateModel existingRateModel = rateDaoService.findOneBy(RateSpecification.withIdEqual(rateId));
+
+        // Apply partial updates following Edit Default Rate pattern
+        applyPartialUpdates(ratePatchResource, existingRateModel);
+
+        // Persist the updated rate table
+        RateModel updatedRateModel = rateDaoService.save(existingRateModel);
+
+        // Transform updated model to GET resource for response
+        RateGetResource rateGetResource = rateMapper.modelToGetResource(updatedRateModel);
+
+        log.info("Rate table '{}' updated successfully with ID: {}",
+                updatedRateModel.getRateName(), updatedRateModel.getId());
+
+        // Return HTTP 200 OK with updated rate table
+        return ResponseEntity.ok(rateGetResource);
+    }
+
+
+    private void applyPartialUpdates(RatePatchResource ratePatchResource, RateModel existingRateModel) {
+        // Update basic fields when provided (null-safe)
+        if (ratePatchResource.getRateName() != null) {
+            existingRateModel.setRateName(ratePatchResource.getRateName());
+        }
+
+        if (ratePatchResource.getFromDate() != null) {
+            existingRateModel.setFromDate(ratePatchResource.getFromDate());
+        }
+
+        if (ratePatchResource.getUntilDate() != null) {
+            existingRateModel.setUntilDate(ratePatchResource.getUntilDate());
+        }
+
+        // Handle rate configuration update/creation (same logic as Edit Default Rate)
+        if (ratePatchResource.getRate() != null) {
+            if (existingRateModel.getRate() == null) {
+                // Creation scenario: Create new RateEmbeddable from patch resource
+                log.debug("Creating new rate configuration for rate table: {}", existingRateModel.getId());
+                RateEmbeddable newRate = rateMapper.fromPatchResource(ratePatchResource.getRate());
+                existingRateModel.setRate(newRate);
+            } else {
+                // Update scenario: Use existing updateFromPatchResource logic
+                log.debug("Updating existing rate configuration for rate table: {}", existingRateModel.getId());
+                rateMapper.updateFromPatchResource(ratePatchResource.getRate(), existingRateModel.getRate());
+            }
+        }
+
+        // Handle day-specific pricing collection replacement when provided
+        if (ratePatchResource.getDaySpecificPricings() != null) {
+            log.debug("Updating day-specific pricing for rate table: {} (replacing {} rules with {})",
+                    existingRateModel.getId(),
+                    existingRateModel.getDaySpecificPricings().size(),
+                    ratePatchResource.getDaySpecificPricings().size());
+
+            // Clear existing rules and replace with new ones
+            existingRateModel.getDaySpecificPricings().clear();
+            ratePatchResource.getDaySpecificPricings().forEach(daySpecificPricingPost ->
+                    existingRateModel.getDaySpecificPricings().add(
+                            rateMapper.daySpecificPricingPostToEmbeddable(daySpecificPricingPost)
+                    )
+            );
+        }
+    }
+
 }
