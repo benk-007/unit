@@ -6,9 +6,13 @@ package com.smsmode.unit.service;
 
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 public interface RateService {
 
     ResponseEntity<RateGetResource> create(RatePostResource ratePostResource);
+
+    ResponseEntity<Page<RateGetResource>> retrieveAll(String search, Pageable pageable);
 }

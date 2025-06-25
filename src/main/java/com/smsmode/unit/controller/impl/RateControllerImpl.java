@@ -9,6 +9,8 @@ import com.smsmode.unit.resource.unit.rate.RateGetResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import com.smsmode.unit.service.RateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class RateControllerImpl implements RateController {
 
     private final RateService rateService;
+
+    @Override
+    public ResponseEntity<Page<RateGetResource>> getRates(String search, Pageable pageable) {
+        return rateService.retrieveAll(search, pageable);
+    }
+
 
     @Override
     public ResponseEntity<RateGetResource> postRate(RatePostResource ratePostResource) {

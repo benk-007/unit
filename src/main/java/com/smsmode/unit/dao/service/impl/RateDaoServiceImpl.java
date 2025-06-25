@@ -9,6 +9,9 @@ import com.smsmode.unit.dao.service.RateDaoService;
 import com.smsmode.unit.model.RateModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -29,4 +32,20 @@ public class RateDaoServiceImpl implements RateDaoService {
 
         return savedRate;
     }
+
+    @Override
+    public Page<RateModel> findAllBy(Specification<RateModel> specification, Pageable pageable) {
+        log.debug("Retrieving rate tables with pagination - page: {}, size: {}",
+                pageable.getPageNumber(), pageable.getPageSize());
+
+        Page<RateModel> ratePage = rateRepository.findAll(specification, pageable);
+
+        log.debug("Found {} rate tables (total: {}, pages: {})",
+                ratePage.getNumberOfElements(),
+                ratePage.getTotalElements(),
+                ratePage.getTotalPages());
+
+        return ratePage;
+    }
+
 }
