@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/settings/rates/tables")
@@ -26,5 +27,6 @@ public interface RateController {
     ResponseEntity<RateGetResource> patchRate(@PathVariable("rateId") String rateId, @RequestBody @Valid RatePatchResource ratePatchResource);
 
     @DeleteMapping("/{rateId}")
+    @PreAuthorize("permitAll()")
     ResponseEntity<Void> deleteRate(@PathVariable("rateId") String rateId);
 }

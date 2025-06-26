@@ -26,82 +26,151 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
 public abstract class RateMapper {
 
-    // UNIT RATES
+    // ========================================
+    // DEFAULT RATE (RateEmbeddable) MAPPINGS
+    // ========================================
 
-    @Mapping(source = "rentalBaseRate", target = "rentalBaseRate")
-    @Mapping(source = "additionalGuestFee", target = "additionalGuestFee")
-    public abstract DefaultRateGetResource toGetResource(RateEmbeddable embeddable);
+    /**
+     * Maps RateEmbeddable to DefaultRateGetResource.
+     */
+    public abstract DefaultRateGetResource embeddableToGetResource(RateEmbeddable embeddable);
 
+    /**
+     * Maps DefaultRatePatchResource to RateEmbeddable for creation scenario.
+     */
+    public abstract RateEmbeddable patchResourceToEmbeddable(DefaultRatePatchResource patchResource);
 
-    @Mapping(source = "rentalBaseRate", target = "rentalBaseRate")
-    @Mapping(source = "additionalGuestFee", target = "additionalGuestFee")
-    public abstract RateEmbeddable fromPatchResource(DefaultRatePatchResource patchResource);
+    /**
+     * Updates existing RateEmbeddable with values from DefaultRatePatchResource.
+     */
+    @Mapping(target = "rentalBaseRate", ignore = true)
+    @Mapping(target = "additionalGuestFee", ignore = true)
+    public abstract void updateEmbeddableFromPatchResource(
+            DefaultRatePatchResource patchResource,
+            @MappingTarget RateEmbeddable existingEmbeddable);
 
-
-    public void updateFromPatchResource(DefaultRatePatchResource patchResource, @MappingTarget RateEmbeddable existingRate) {
-        if (patchResource == null) {
-            return;
-        }
+    /**
+     * Post-mapping method to handle nested embeddables update.
+     */
+    @AfterMapping
+    public void afterUpdateEmbeddableFromPatchResource(
+            DefaultRatePatchResource patchResource,
+            @MappingTarget RateEmbeddable existingEmbeddable) {
 
         // Handle rental base rate update/creation
         if (patchResource.getRentalBaseRate() != null) {
-            if (existingRate.getRentalBaseRate() == null) {
-                existingRate.setRentalBaseRate(new RentalBaseRateEmbeddable());
+            if (existingEmbeddable.getRentalBaseRate() == null) {
+                existingEmbeddable.setRentalBaseRate(new RentalBaseRateEmbeddable());
             }
-            updateRentalBaseRate(patchResource.getRentalBaseRate(), existingRate.getRentalBaseRate());
+            updateRentalBaseRateEmbeddable(patchResource.getRentalBaseRate(), existingEmbeddable.getRentalBaseRate());
         }
 
         // Handle additional guest fee update/creation
         if (patchResource.getAdditionalGuestFee() != null) {
-            if (existingRate.getAdditionalGuestFee() == null) {
-                existingRate.setAdditionalGuestFee(new AdditionalGuestFeeEmbeddable());
+            if (existingEmbeddable.getAdditionalGuestFee() == null) {
+                existingEmbeddable.setAdditionalGuestFee(new AdditionalGuestFeeEmbeddable());
             }
-            updateAdditionalGuestFee(patchResource.getAdditionalGuestFee(), existingRate.getAdditionalGuestFee());
+            updateAdditionalGuestFeeEmbeddable(patchResource.getAdditionalGuestFee(), existingEmbeddable.getAdditionalGuestFee());
         }
     }
 
-    // RATE TABLES
+    // ========================================
+    // RATE TABLE (RateModel) MAPPINGS
+    // ========================================
 
     @Mapping(source = "rate", target = "rate")
     @Mapping(source = "daySpecificPricings", target = "daySpecificPricings")
     public abstract RateModel postResourceToModel(RatePostResource ratePostResource);
 
-
     @Mapping(source = "rate", target = "rate")
     @Mapping(source = "daySpecificPricings", target = "daySpecificPricings")
     public abstract RateGetResource modelToGetResource(RateModel rateModel);
 
+    /**
+     * Updates existing RateModel with values from RatePatchResource.
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "rate", ignore = true)
+    @Mapping(target = "daySpecificPricings", ignore = true)
+    public abstract RateModel patchResourceToModel(RatePatchResource ratePatchResource, @MappingTarget RateModel rateModel);
+
+    /**
+     * Post-mapping method to handle nested embeddables update.
+     */
+    @AfterMapping
+    public void afterPatchResourceToModel(RatePatchResource ratePatchResource, @MappingTarget RateModel rateModel) {
+        // Handle rate configuration update/creation
+        if (ratePatchResource.getRate() != null) {
+            if (rateModel.getRate() == null) {
+                rateModel.setRate(patchResourceToEmbeddable(ratePatchResource.getRate()));
+            } else {
+                updateEmbeddableFromPatchResource(ratePatchResource.getRate(), rateModel.getRate());
+            }
+        }
+
+        // Handle day-specific pricing collection replacement
+        if (ratePatchResource.getDaySpecificPricings() != null) {
+            rateModel.getDaySpecificPricings().clear();
+            ratePatchResource.getDaySpecificPricings().forEach(daySpecificPricingPost ->
+                    rateModel.getDaySpecificPricings().add(
+                            daySpecificPricingPostToEmbeddable(daySpecificPricingPost)
+                    )
+            );
+        }
+    }
 
     public abstract DaySpecificPricingEmbeddable daySpecificPricingPostToEmbeddable(
             DaySpecificPricingPostResource daySpecificPricingPostResource);
 
-
     public abstract DaySpecificPricingGetResource daySpecificPricingEmbeddableToGetResource(
             DaySpecificPricingEmbeddable daySpecificPricingEmbeddable);
 
-
     public abstract AuditGetResource modelToAuditResource(AbstractBaseModel baseModel);
-
-
-    // POST-MAPPING METHODS
 
     @AfterMapping
     public void afterModelToGetResource(RateModel rateModel, @MappingTarget RateGetResource rateGetResource) {
         rateGetResource.setAudit(this.modelToAuditResource(rateModel));
     }
 
+    // ========================================
+    // PROTECTED MAPPING METHODS FOR NESTED EMBEDDABLES
+    // ========================================
 
-    // PROTECTED IMPLEMENTATION - MapStruct Generated pour les mappings imbriqués (embeddables)
+    /**
+     * Maps RentalBaseRateEmbeddable to GET resource.
+     * Protected method following MapStruct convention for nested mappings.
+     */
+    protected abstract RentalBaseRateGetResource rentalBaseRateEmbeddableToGetResource(RentalBaseRateEmbeddable embeddable);
 
-    protected abstract RentalBaseRateGetResource rentalBaseRateToGetResource(RentalBaseRateEmbeddable embeddable);
+    /**
+     * Maps AdditionalGuestFeeEmbeddable to GET resource.
+     * Protected method following MapStruct convention for nested mappings.
+     */
+    protected abstract AdditionalGuestFeeGetResource additionalGuestFeeEmbeddableToGetResource(AdditionalGuestFeeEmbeddable embeddable);
 
-    protected abstract AdditionalGuestFeeGetResource additionalGuestFeeToGetResource(AdditionalGuestFeeEmbeddable embeddable);
-
+    /**
+     * Maps RentalBaseRatePatchResource to embeddable.
+     * Protected method following MapStruct convention for nested mappings.
+     */
     protected abstract RentalBaseRateEmbeddable rentalBaseRatePatchToEmbeddable(RentalBaseRatePatchResource patchResource);
 
+    /**
+     * Maps AdditionalGuestFeePatchResource to embeddable.
+     * Protected method following MapStruct convention for nested mappings.
+     */
     protected abstract AdditionalGuestFeeEmbeddable additionalGuestFeePatchToEmbeddable(AdditionalGuestFeePatchResource patchResource);
 
-    protected abstract void updateRentalBaseRate(RentalBaseRatePatchResource patchResource, @MappingTarget RentalBaseRateEmbeddable existingEmbeddable);
+    /**
+     * Updates existing RentalBaseRateEmbeddable with patch values.
+     */
+    protected abstract void updateRentalBaseRateEmbeddable(
+            RentalBaseRatePatchResource patchResource,
+            @MappingTarget RentalBaseRateEmbeddable existingEmbeddable);
 
-    protected abstract void updateAdditionalGuestFee(AdditionalGuestFeePatchResource patchResource, @MappingTarget AdditionalGuestFeeEmbeddable existingEmbeddable);
+    /**
+     * Updates existing AdditionalGuestFeeEmbeddable with patch values.
+     */
+    protected abstract void updateAdditionalGuestFeeEmbeddable(
+            AdditionalGuestFeePatchResource patchResource,
+            @MappingTarget AdditionalGuestFeeEmbeddable existingEmbeddable);
 }
