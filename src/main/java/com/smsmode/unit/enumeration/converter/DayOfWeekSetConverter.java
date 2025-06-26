@@ -31,7 +31,7 @@ public class DayOfWeekSetConverter implements AttributeConverter<Set<DayOfWeek>,
     @Override
     public String convertToDatabaseColumn(Set<DayOfWeek> dayOfWeeks) {
         if (CollectionUtils.isEmpty(dayOfWeeks)) {
-            return "";
+            return null;
         }
         return dayOfWeeks.stream()
                 .map(day -> String.valueOf(day.ordinal()))

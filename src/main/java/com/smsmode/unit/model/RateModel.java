@@ -48,7 +48,7 @@ public class RateModel extends AbstractBaseModel {
     @Valid
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "X_DAY_SPECIFIC_PRICING", joinColumns = @JoinColumn(name = "RATE_ID"))
-    private List<DaySpecificPricingEmbeddable> daySpecificPricings = new ArrayList<>();
+    private Set<DaySpecificPricingEmbeddable> daySpecificPricings = new HashSet<>();
 
     @ManyToMany(mappedBy = "rateTables", fetch = FetchType.LAZY)
     private Set<UnitModel> units = new HashSet<>();

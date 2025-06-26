@@ -5,6 +5,7 @@
 package com.smsmode.unit.embeddable;
 
 import com.smsmode.unit.enumeration.converter.DayOfWeekSetConverter;
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotEmpty;
@@ -17,6 +18,7 @@ import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -28,6 +30,7 @@ public class DaySpecificPricingEmbeddable {
 
     @NotEmpty(message = "At least one day must be selected")
     @Convert(converter = DayOfWeekSetConverter.class)
+    @Column(name = "daysOfWeek", length = 20)
     private Set<DayOfWeek> daysOfWeek = new LinkedHashSet<>();
 
     @NotNull(message = "Nightly rate is required")
