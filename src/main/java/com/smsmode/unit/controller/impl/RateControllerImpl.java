@@ -22,14 +22,14 @@ public class RateControllerImpl implements RateController {
     private final RateService rateService;
 
     @Override
-    public ResponseEntity<Page<RateGetResource>> getRates(String search, Pageable pageable) {
-        return rateService.retrieveAll(search, pageable);
+    public ResponseEntity<Page<RateGetResource>> getRates(String search, String unitId, Pageable pageable) {
+        return rateService.retrieveAll(search, unitId, pageable);
     }
 
 
     @Override
-    public ResponseEntity<RateGetResource> postRate(RatePostResource ratePostResource) {
-        return rateService.create(ratePostResource);
+    public ResponseEntity<RateGetResource> postRate(RatePostResource ratePostResource, String unitId) {
+        return rateService.create(ratePostResource, unitId);
     }
 
     @Override

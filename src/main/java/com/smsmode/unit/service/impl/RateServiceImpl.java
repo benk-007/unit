@@ -5,9 +5,12 @@
 package com.smsmode.unit.service.impl;
 
 import com.smsmode.unit.dao.service.RateDaoService;
+import com.smsmode.unit.dao.service.UnitDaoService;
 import com.smsmode.unit.dao.specification.RateSpecification;
+import com.smsmode.unit.dao.specification.UnitSpecification;
 import com.smsmode.unit.mapper.RateMapper;
 import com.smsmode.unit.model.RateModel;
+import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
 import com.smsmode.unit.resource.unit.rate.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
@@ -35,14 +38,24 @@ import java.net.URI;
 public class RateServiceImpl implements RateService {
 
     private final RateDaoService rateDaoService;
+    private final UnitDaoService unitDaoService;
     private final RateMapper rateMapper;
 
     @Override
-    public ResponseEntity<RateGetResource> create(RatePostResource ratePostResource) {
-        log.debug("Creating rate table: '{}'", ratePostResource.getRateName());
+    public ResponseEntity<RateGetResource> create(RatePostResource ratePostResource, String unitId) {
+        log.debug("Creating rate table: '{}' with unitId: '{}'", ratePostResource.getRateName(), unitId);
 
         RateModel rateModel = rateMapper.postResourceToModel(ratePostResource);
         rateModel = rateDaoService.save(rateModel);
+
+        // Associate with unit if unitId is provided
+        if (unitId != null) {
+            UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
+            unit.getRateTables().add(rateModel);
+            unitDaoService.save(unit);
+            log.debug("Rate table '{}' associated with unit: '{}'", rateModel.getRateName(), unit.getName());
+        }
+
         RateGetResource response = rateMapper.modelToGetResource(rateModel);
 
         log.debug("Rate table '{}' created successfully with ID: {}", rateModel.getRateName(), rateModel.getId());
@@ -50,13 +63,11 @@ public class RateServiceImpl implements RateService {
     }
 
     @Override
-    public ResponseEntity<Page<RateGetResource>> retrieveAll(String search, Pageable pageable) {
-        log.debug("Retrieving rate tables with search: '{}', page: {}, size: {}",
-                search, pageable.getPageNumber(), pageable.getPageSize());
+    public ResponseEntity<Page<RateGetResource>> retrieveAll(String search, String unitId, Pageable pageable) {
+        log.debug("Retrieving rate tables with search: '{}', unitId: '{}', page: {}, size: {}",
+                search, unitId, pageable.getPageNumber(), pageable.getPageSize());
 
-        Specification<RateModel> specification = Specification
-                .where(RateSpecification.withRateNameContaining(search));
-
+        Specification<RateModel> specification = buildSpecification(search, unitId);
         Page<RateModel> rateModelsPage = rateDaoService.findAllBy(specification, pageable);
         Page<RateGetResource> response = rateModelsPage.map(rateMapper::modelToGetResource);
 
@@ -89,4 +100,30 @@ public class RateServiceImpl implements RateService {
         log.debug("Rate table '{}' deleted successfully", rateModel.getRateName());
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Builds the specification for filtering rate tables based on search and unitId parameters.
+     */
+    private Specification<RateModel> buildSpecification(String search, String unitId) {
+        Specification<RateModel> specification = Specification.where(null);
+
+        // Filter by unit if unitId is provided
+        if (unitId != null) {
+            specification = specification.and(RateSpecification.withUnitIdEqual(unitId));
+        }
+
+        // Add search criteria if search term is provided
+        if (search != null) {
+            // Search in rate names OR unit names
+            Specification<RateModel> searchSpec = Specification
+                    .where(RateSpecification.withRateNameContaining(search))
+                    .or(RateSpecification.withUnitNameContaining(search));
+
+            specification = specification.and(searchSpec);
+        }
+
+        return specification;
+    }
 }
+
+

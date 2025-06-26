@@ -13,9 +13,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface RateService {
 
-    ResponseEntity<RateGetResource> create(RatePostResource ratePostResource);
+    ResponseEntity<RateGetResource> create(RatePostResource ratePostResource, String unitId);
 
-    ResponseEntity<Page<RateGetResource>> retrieveAll(String search, Pageable pageable);
+    ResponseEntity<Page<RateGetResource>> retrieveAll(String search, String unitId, Pageable pageable);
 
     ResponseEntity<RateGetResource> update(String rateId, RatePatchResource ratePatchResource);
 

@@ -17,7 +17,9 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @NoArgsConstructor
@@ -47,4 +49,7 @@ public class RateModel extends AbstractBaseModel {
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "X_DAY_SPECIFIC_PRICING", joinColumns = @JoinColumn(name = "RATE_ID"))
     private List<DaySpecificPricingEmbeddable> daySpecificPricings = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "rateTables", fetch = FetchType.LAZY)
+    private Set<UnitModel> units = new HashSet<>();
 }
