@@ -5,19 +5,20 @@
 package com.smsmode.unit.mapper;
 
 import com.smsmode.unit.embeddable.AdditionalGuestFeeEmbeddable;
+import com.smsmode.unit.embeddable.DaySpecificPricingEmbeddable;
 import com.smsmode.unit.embeddable.RateEmbeddable;
 import com.smsmode.unit.embeddable.RentalBaseRateEmbeddable;
+import com.smsmode.unit.model.RateModel;
+import com.smsmode.unit.model.base.AbstractBaseModel;
+import com.smsmode.unit.resource.common.AuditGetResource;
+import com.smsmode.unit.resource.unit.rate.DaySpecificPricingGetResource;
+import com.smsmode.unit.resource.unit.rate.DaySpecificPricingPostResource;
+import com.smsmode.unit.resource.unit.rate.RateGetResource;
+import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import com.smsmode.unit.resource.unit.rate.*;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 
-/**
- * Mapper for converting between RateEmbeddable and rate resources.
- * Simplified design following clean code principles with clear public API.
- *
- * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
- * <p>Created [current date]</p>
- */
 @Slf4j
 @Mapper(
         componentModel = "spring",
@@ -26,101 +27,150 @@ import org.mapstruct.*;
 public abstract class RateMapper {
 
     // ========================================
-    // PUBLIC API - Clean and Simple
+    // DEFAULT RATE (RateEmbeddable) MAPPINGS
     // ========================================
 
     /**
-     * Maps RateEmbeddable to DefaultRateGetResource for GET responses.
-     * Handles null cases gracefully.
+     * Maps RateEmbeddable to DefaultRateGetResource.
      */
-    public DefaultRateGetResource toGetResource(RateEmbeddable embeddable) {
-        if (embeddable == null) {
-            return new DefaultRateGetResource();
-        }
-        return mapToGetResource(embeddable);
-    }
+    public abstract DefaultRateGetResource embeddableToGetResource(RateEmbeddable embeddable);
 
     /**
-     * Creates a new RateEmbeddable from DefaultRatePatchResource for creation scenarios.
+     * Maps DefaultRatePatchResource to RateEmbeddable for creation scenario.
      */
-    @Mapping(source = "rentalBaseRate", target = "rentalBaseRate")
-    @Mapping(source = "additionalGuestFee", target = "additionalGuestFee")
-    public abstract RateEmbeddable fromPatchResource(DefaultRatePatchResource patchResource);
+    public abstract RateEmbeddable patchResourceToEmbeddable(DefaultRatePatchResource patchResource);
 
     /**
-     * Updates existing RateEmbeddable with values from PATCH request.
-     * Handles partial updates and nested structure creation.
+     * Updates existing RateEmbeddable with values from DefaultRatePatchResource.
      */
-    public void updateFromPatchResource(DefaultRatePatchResource patchResource, @MappingTarget RateEmbeddable existingRate) {
-        if (patchResource == null) {
-            return;
-        }
+    @Mapping(target = "rentalBaseRate", ignore = true)
+    @Mapping(target = "additionalGuestFee", ignore = true)
+    public abstract void updateEmbeddableFromPatchResource(
+            DefaultRatePatchResource patchResource,
+            @MappingTarget RateEmbeddable existingEmbeddable);
+
+    /**
+     * Post-mapping method to handle nested embeddables update.
+     */
+    @AfterMapping
+    public void afterUpdateEmbeddableFromPatchResource(
+            DefaultRatePatchResource patchResource,
+            @MappingTarget RateEmbeddable existingEmbeddable) {
 
         // Handle rental base rate update/creation
         if (patchResource.getRentalBaseRate() != null) {
-            if (existingRate.getRentalBaseRate() == null) {
-                existingRate.setRentalBaseRate(new RentalBaseRateEmbeddable());
+            if (existingEmbeddable.getRentalBaseRate() == null) {
+                existingEmbeddable.setRentalBaseRate(new RentalBaseRateEmbeddable());
             }
-            updateRentalBaseRate(patchResource.getRentalBaseRate(), existingRate.getRentalBaseRate());
+            updateRentalBaseRateEmbeddable(patchResource.getRentalBaseRate(), existingEmbeddable.getRentalBaseRate());
         }
 
         // Handle additional guest fee update/creation
         if (patchResource.getAdditionalGuestFee() != null) {
-            if (existingRate.getAdditionalGuestFee() == null) {
-                existingRate.setAdditionalGuestFee(new AdditionalGuestFeeEmbeddable());
+            if (existingEmbeddable.getAdditionalGuestFee() == null) {
+                existingEmbeddable.setAdditionalGuestFee(new AdditionalGuestFeeEmbeddable());
             }
-            updateAdditionalGuestFee(patchResource.getAdditionalGuestFee(), existingRate.getAdditionalGuestFee());
+            updateAdditionalGuestFeeEmbeddable(patchResource.getAdditionalGuestFee(), existingEmbeddable.getAdditionalGuestFee());
         }
     }
 
     // ========================================
-    // PROTECTED IMPLEMENTATION - MapStruct Generated
+    // RATE TABLE (RateModel) MAPPINGS
+    // ========================================
+
+    @Mapping(source = "rate", target = "rate")
+    @Mapping(source = "daySpecificPricings", target = "daySpecificPricings")
+    public abstract RateModel postResourceToModel(RatePostResource ratePostResource);
+
+    @Mapping(source = "rate", target = "rate")
+    @Mapping(source = "daySpecificPricings", target = "daySpecificPricings")
+    public abstract RateGetResource modelToGetResource(RateModel rateModel);
+
+    /**
+     * Updates existing RateModel with values from RatePatchResource.
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "rate", ignore = true)
+    @Mapping(target = "daySpecificPricings", ignore = true)
+    public abstract RateModel patchResourceToModel(RatePatchResource ratePatchResource, @MappingTarget RateModel rateModel);
+
+    /**
+     * Post-mapping method to handle nested embeddables update.
+     */
+    @AfterMapping
+    public void afterPatchResourceToModel(RatePatchResource ratePatchResource, @MappingTarget RateModel rateModel) {
+        // Handle rate configuration update/creation
+        if (ratePatchResource.getRate() != null) {
+            if (rateModel.getRate() == null) {
+                rateModel.setRate(patchResourceToEmbeddable(ratePatchResource.getRate()));
+            } else {
+                updateEmbeddableFromPatchResource(ratePatchResource.getRate(), rateModel.getRate());
+            }
+        }
+
+        // Handle day-specific pricing collection replacement
+        if (ratePatchResource.getDaySpecificPricings() != null) {
+            rateModel.getDaySpecificPricings().clear();
+            ratePatchResource.getDaySpecificPricings().forEach(daySpecificPricingPost ->
+                    rateModel.getDaySpecificPricings().add(
+                            daySpecificPricingPostToEmbeddable(daySpecificPricingPost)
+                    )
+            );
+        }
+    }
+
+    public abstract DaySpecificPricingEmbeddable daySpecificPricingPostToEmbeddable(
+            DaySpecificPricingPostResource daySpecificPricingPostResource);
+
+    public abstract DaySpecificPricingGetResource daySpecificPricingEmbeddableToGetResource(
+            DaySpecificPricingEmbeddable daySpecificPricingEmbeddable);
+
+    public abstract AuditGetResource modelToAuditResource(AbstractBaseModel baseModel);
+
+    @AfterMapping
+    public void afterModelToGetResource(RateModel rateModel, @MappingTarget RateGetResource rateGetResource) {
+        rateGetResource.setAudit(this.modelToAuditResource(rateModel));
+    }
+
+    // ========================================
+    // PROTECTED MAPPING METHODS FOR NESTED EMBEDDABLES
     // ========================================
 
     /**
-     * Internal mapping method handled by MapStruct for nested structures.
+     * Maps RentalBaseRateEmbeddable to GET resource.
+     * Protected method following MapStruct convention for nested mappings.
      */
-    @Mapping(source = "rentalBaseRate", target = "rentalBaseRate")
-    @Mapping(source = "additionalGuestFee", target = "additionalGuestFee")
-    protected abstract DefaultRateGetResource mapToGetResource(RateEmbeddable embeddable);
+    protected abstract RentalBaseRateGetResource rentalBaseRateEmbeddableToGetResource(RentalBaseRateEmbeddable embeddable);
 
     /**
-     * Maps RentalBaseRateEmbeddable to RentalBaseRateGetResource.
-     * Used automatically by MapStruct in nested mapping.
+     * Maps AdditionalGuestFeeEmbeddable to GET resource.
+     * Protected method following MapStruct convention for nested mappings.
      */
-    protected abstract RentalBaseRateGetResource rentalBaseRateToGetResource(RentalBaseRateEmbeddable embeddable);
+    protected abstract AdditionalGuestFeeGetResource additionalGuestFeeEmbeddableToGetResource(AdditionalGuestFeeEmbeddable embeddable);
 
     /**
-     * Maps AdditionalGuestFeeEmbeddable to AdditionalGuestFeeGetResource.
-     * Used automatically by MapStruct in nested mapping.
-     */
-    protected abstract AdditionalGuestFeeGetResource additionalGuestFeeToGetResource(AdditionalGuestFeeEmbeddable embeddable);
-
-    /**
-     * Maps RentalBaseRatePatchResource to RentalBaseRateEmbeddable for creation.
-     * Used automatically by MapStruct in fromPatchResource method.
+     * Maps RentalBaseRatePatchResource to embeddable.
+     * Protected method following MapStruct convention for nested mappings.
      */
     protected abstract RentalBaseRateEmbeddable rentalBaseRatePatchToEmbeddable(RentalBaseRatePatchResource patchResource);
 
     /**
-     * Maps AdditionalGuestFeePatchResource to AdditionalGuestFeeEmbeddable for creation.
-     * Used automatically by MapStruct in fromPatchResource method.
+     * Maps AdditionalGuestFeePatchResource to embeddable.
+     * Protected method following MapStruct convention for nested mappings.
      */
     protected abstract AdditionalGuestFeeEmbeddable additionalGuestFeePatchToEmbeddable(AdditionalGuestFeePatchResource patchResource);
 
     /**
-     * Updates existing RentalBaseRateEmbeddable with values from PATCH request.
-     * Used internally by updateFromPatchResource method.
+     * Updates existing RentalBaseRateEmbeddable with patch values.
      */
-    protected abstract void updateRentalBaseRate(
+    protected abstract void updateRentalBaseRateEmbeddable(
             RentalBaseRatePatchResource patchResource,
             @MappingTarget RentalBaseRateEmbeddable existingEmbeddable);
 
     /**
-     * Updates existing AdditionalGuestFeeEmbeddable with values from PATCH request.
-     * Used internally by updateFromPatchResource method.
+     * Updates existing AdditionalGuestFeeEmbeddable with patch values.
      */
-    protected abstract void updateAdditionalGuestFee(
+    protected abstract void updateAdditionalGuestFeeEmbeddable(
             AdditionalGuestFeePatchResource patchResource,
             @MappingTarget AdditionalGuestFeeEmbeddable existingEmbeddable);
 }
