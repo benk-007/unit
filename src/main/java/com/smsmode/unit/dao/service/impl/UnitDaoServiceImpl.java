@@ -50,4 +50,15 @@ public class UnitDaoServiceImpl implements UnitDaoService {
                             "No unit found with the specified criteria");
                 });
     }
+
+    @Override
+    public UnitModel findById(String unitId) {
+        return unitRepository.findById(unitId).orElseThrow(() -> {
+            log.debug("Unit with ID [{}] not found", unitId);
+            return new ResourceNotFoundException(
+                    ResourceNotFoundExceptionTitleEnum.UNIT_NOT_FOUND,
+                    "Unit with ID [" + unitId + "] not found");
+        });
+    }
+
 }

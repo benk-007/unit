@@ -22,4 +22,5 @@ public interface UnitDaoService {
 
     UnitModel findOneBy(Specification<UnitModel> specification);
 
+    UnitModel findById(String unitId);
 }

@@ -6,8 +6,11 @@ package com.smsmode.unit.resource.unit;
 
 import com.smsmode.unit.embeddable.AddressEmbeddable;
 import com.smsmode.unit.embeddable.ContactEmbeddable;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * TODO: add your documentation
@@ -20,6 +23,8 @@ public class UnitPostResource {
     @NotBlank
     private String name;
     private String subtitle;
+    private UnitNatureEnum nature = UnitNatureEnum.SINGLE;
     private AddressEmbeddable address;
     private ContactEmbeddable contact;
+    private List<SubUnitResource> subUnits;
 }

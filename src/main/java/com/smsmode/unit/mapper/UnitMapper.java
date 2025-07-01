@@ -30,6 +30,7 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class UnitMapper {
 
+    @Mapping(source = "nature", target = "nature")
     public abstract UnitModel postResourceToModel(UnitPostResource unitPostResource);
 
     public abstract UnitItemGetResource modelToItemGetResource(UnitModel unitModel);

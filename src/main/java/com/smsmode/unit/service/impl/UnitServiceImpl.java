@@ -6,8 +6,10 @@ package com.smsmode.unit.service.impl;
 
 import com.smsmode.unit.dao.service.UnitDaoService;
 import com.smsmode.unit.dao.specification.UnitSpecification;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.mapper.UnitMapper;
 import com.smsmode.unit.model.UnitModel;
+import com.smsmode.unit.resource.unit.SubUnitResource;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
@@ -39,8 +41,34 @@ public class UnitServiceImpl implements UnitService {
     public ResponseEntity<UnitItemGetResource> create(UnitPostResource unitPostResource) {
 
         UnitModel unitModel = unitMapper.postResourceToModel(unitPostResource);
-
         unitModel = unitDaoService.save(unitModel);
+
+        if(unitModel.getNature() == UnitNatureEnum.MULTI_UNIT && unitPostResource.getSubUnits() != null) {
+            for (SubUnitResource subUnit : unitPostResource.getSubUnits()) {
+
+                if (subUnit.getUnitId() == null && (subUnit.getName() == null || subUnit.getName().isBlank())) {
+                    log.warn("Skipping sub-unit creation: both unitId and name are null or blank.");
+                    continue;
+                }
+
+                UnitModel childUnit;
+                if (subUnit.getUnitId() != null){
+                    childUnit = unitDaoService.findById(subUnit.getUnitId());
+                    log.debug("Attaching existing unit [{}] to parent [{}]", subUnit.getUnitId(), unitModel.getId());
+                } else {
+                    childUnit = new UnitModel();
+                    childUnit.setAddress(unitModel.getAddress());
+                    childUnit.setContact(unitModel.getContact());
+                    childUnit.setNature(UnitNatureEnum.SINGLE);
+                    childUnit.setName(subUnit.getName());
+                    childUnit.setReadiness(Boolean.TRUE.equals(subUnit.getReadiness()));
+                    log.debug("Creating new sub-unit: {}", subUnit.getName());
+                }
+
+                childUnit.setParentUnit(unitModel);
+                unitDaoService.save(childUnit);
+            }
+        }
 
         return ResponseEntity.created(URI.create("")).body(unitMapper.modelToItemGetResource(unitModel));
     }

@@ -80,4 +80,9 @@ public class UnitModel extends AbstractBaseModel {
 
     @Embedded
     private RateEmbeddable defaultRate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_UNIT_ID")
+    private UnitModel parentUnit;
+
 }
