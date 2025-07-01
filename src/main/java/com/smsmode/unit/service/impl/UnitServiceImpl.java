@@ -78,6 +78,28 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable) {
+        boolean isSearchEmpty = (search == null || search.isBlank());
+        boolean areAllParamsNull = (search == null && nature == null && withParent == null);
+
+        if (!isSearchEmpty || areAllParamsNull) {
+            Specification<UnitModel> searchSpec = Specification
+                    .where(UnitSpecification.withNameLike(search))
+                    .or(UnitSpecification.withSubtitleLike(search));
+
+            Specification<UnitModel> spec = Specification
+                    .where(searchSpec)
+                    .and(UnitSpecification.withNature(nature))
+                    .and(UnitSpecification.withParentFilter(false));
+
+
+            Page<UnitModel> topLevelUnits = unitDaoService.findAllBy(spec, pageable);
+
+            Page<UnitItemGetResource> resourcePage = topLevelUnits.map(unitMapper::modelToItemGetResource);
+
+            return ResponseEntity.ok(resourcePage);
+        }
+
+
         Specification<UnitModel> searchSpec = Specification
                 .where(UnitSpecification.withNameLike(search))
                 .or(UnitSpecification.withSubtitleLike(search));

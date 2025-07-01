@@ -16,6 +16,7 @@ import com.smsmode.unit.resource.unit.details.UnitDetailsPatchResource;
 import com.smsmode.unit.resource.unit.infos.UnitInfosGetResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * TODO: add your documentation
@@ -35,10 +36,27 @@ public abstract class UnitMapper {
 
     public abstract UnitItemGetResource modelToItemGetResource(UnitModel unitModel);
 
+    protected com.smsmode.unit.dao.service.UnitDaoService unitDaoService;
+
+    @Autowired
+    public void setUnitDaoService(com.smsmode.unit.dao.service.UnitDaoService unitDaoService) {
+        this.unitDaoService = unitDaoService;
+    }
+
+
     @AfterMapping
     public void afterModelToItemGetResource(UnitModel unitModel, @MappingTarget UnitItemGetResource unitItemGetResource) {
         unitItemGetResource.setAudit(this.modelToAuditResource(unitModel));
+
+        if (unitModel.getNature() == com.smsmode.unit.enumeration.UnitNatureEnum.MULTI_UNIT) {
+            var subUnits = unitDaoService.findByParentUnit(unitModel);
+            var subUnitResources = subUnits.stream()
+                    .map(this::modelToItemGetResource)
+                    .toList();
+            unitItemGetResource.setSubUnits(subUnitResources);
+        }
     }
+
 
     public abstract UnitGetResource modelToGetResource(UnitModel unitModel);
 

@@ -9,6 +9,8 @@ import com.smsmode.unit.embeddable.ContactEmbeddable;
 import com.smsmode.unit.resource.common.AuditGetResource;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * TODO: add your documentation
  *
@@ -27,4 +29,6 @@ public class UnitItemGetResource {
     private AddressEmbeddable address;
     private OccupancyGetResource occupancy;
     private boolean readiness;
+
+    private List<UnitItemGetResource> subUnits;
 }

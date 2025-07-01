@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * TODO: add your documentation
  *
@@ -60,5 +62,12 @@ public class UnitDaoServiceImpl implements UnitDaoService {
                     "Unit with ID [" + unitId + "] not found");
         });
     }
+
+    @Override
+    public List<UnitModel> findByParentUnit(UnitModel parent) {
+        return unitRepository.findAll((root, query, cb) ->
+                cb.equal(root.get("parentUnit"), parent));
+    }
+
 
 }

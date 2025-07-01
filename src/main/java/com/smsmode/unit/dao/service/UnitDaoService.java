@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 /**
  * TODO: add your documentation
  *
@@ -23,4 +25,6 @@ public interface UnitDaoService {
     UnitModel findOneBy(Specification<UnitModel> specification);
 
     UnitModel findById(String unitId);
+
+    List<UnitModel> findByParentUnit(UnitModel parent);
 }
