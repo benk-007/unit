@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,7 @@ public class UnitServiceImpl implements UnitService {
                     childUnit.setContact(unitModel.getContact());
                     childUnit.setNature(UnitNatureEnum.SINGLE);
                     childUnit.setName(subUnit.getName());
+                    childUnit.setPriority(subUnit.getPriority());
                     childUnit.setReadiness(Boolean.TRUE.equals(subUnit.getReadiness()));
                     log.debug("Creating new sub-unit: {}", subUnit.getName());
                 }
@@ -73,13 +75,20 @@ public class UnitServiceImpl implements UnitService {
         return ResponseEntity.created(URI.create("")).body(unitMapper.modelToItemGetResource(unitModel));
     }
 
-    @Override
-    public ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, Pageable pageable) {
 
-        Page<UnitModel> units = unitDaoService.findAllBy(null, pageable);
+    @Override
+    public ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable) {
+        Specification<UnitModel> spec = Specification
+                .where(UnitSpecification.withNameLike(search))
+                .and(UnitSpecification.withSubtitleLike(search))
+                .and(UnitSpecification.withNature(nature))
+                .and(UnitSpecification.withParentFilter(withParent));
+
+        Page<UnitModel> units = unitDaoService.findAllBy(spec, pageable);
 
         return ResponseEntity.ok(units.map(unitMapper::modelToItemGetResource));
     }
+
 
     @Override
     public ResponseEntity<UnitGetResource> retrieveById(String unitId) {

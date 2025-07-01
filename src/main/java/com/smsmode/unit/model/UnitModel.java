@@ -85,4 +85,6 @@ public class UnitModel extends AbstractBaseModel {
     @JoinColumn(name = "PARENT_UNIT_ID")
     private UnitModel parentUnit;
 
+    private Integer priority;
+
 }

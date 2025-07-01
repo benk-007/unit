@@ -4,6 +4,7 @@
  */
 package com.smsmode.unit.service;
 
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
@@ -21,7 +22,7 @@ public interface UnitService {
 
     ResponseEntity<UnitItemGetResource> create(UnitPostResource unitPostResource);
 
-    ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, Pageable pageable);
+    ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable);
 
     ResponseEntity<UnitGetResource> retrieveById(String unitId);
 

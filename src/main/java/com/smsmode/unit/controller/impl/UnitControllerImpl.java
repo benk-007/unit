@@ -5,6 +5,7 @@
 package com.smsmode.unit.controller.impl;
 
 import com.smsmode.unit.controller.UnitController;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -28,8 +30,8 @@ public class UnitControllerImpl implements UnitController {
     private final UnitService unitService;
 
     @Override
-    public ResponseEntity<Page<UnitItemGetResource>> getAllUnits(String search, Pageable pageable) {
-        return unitService.retrieveAllByPage(search, pageable);
+    public ResponseEntity<Page<UnitItemGetResource>> getAllUnits(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable) {
+        return unitService.retrieveAllByPage(search, nature, withParent, pageable);
     }
 
     @Override
