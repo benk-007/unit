@@ -6,6 +6,7 @@ package com.smsmode.unit.resource.unit;
 
 import com.smsmode.unit.embeddable.AddressEmbeddable;
 import com.smsmode.unit.embeddable.ContactEmbeddable;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.resource.common.AuditGetResource;
 import lombok.Data;
 
@@ -29,6 +30,6 @@ public class UnitItemGetResource {
     private AddressEmbeddable address;
     private OccupancyGetResource occupancy;
     private boolean readiness;
-
+    private UnitNatureEnum nature;
     private List<UnitItemGetResource> subUnits;
 }
