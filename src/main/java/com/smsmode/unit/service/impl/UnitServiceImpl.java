@@ -78,11 +78,15 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable) {
-        Specification<UnitModel> spec = Specification
+        Specification<UnitModel> searchSpec = Specification
                 .where(UnitSpecification.withNameLike(search))
-                .and(UnitSpecification.withSubtitleLike(search))
+                .or(UnitSpecification.withSubtitleLike(search));
+
+        Specification<UnitModel> spec = Specification
+                .where(searchSpec)
                 .and(UnitSpecification.withNature(nature))
                 .and(UnitSpecification.withParentFilter(withParent));
+
 
         Page<UnitModel> units = unitDaoService.findAllBy(spec, pageable);
 

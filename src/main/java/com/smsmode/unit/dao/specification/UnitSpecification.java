@@ -19,7 +19,10 @@ public class UnitSpecification {
             if (ObjectUtils.isEmpty(unitName)) {
                 return criteriaBuilder.conjunction();
             }
-            return criteriaBuilder.like(root.get(UnitModel_.name), "%" + unitName + "%");
+            return criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get(UnitModel_.name)),
+                    "%" + unitName.toLowerCase() + "%"
+            );
         };
     }
 
@@ -28,9 +31,13 @@ public class UnitSpecification {
             if (ObjectUtils.isEmpty(subtitle)) {
                 return criteriaBuilder.conjunction();
             }
-            return criteriaBuilder.like(root.get(UnitModel_.subtitle), "%" + subtitle + "%");
+            return criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get(UnitModel_.subtitle)),
+                    "%" + subtitle.toLowerCase() + "%"
+            );
         };
     }
+
 
     public static Specification<UnitModel> withNature(UnitNatureEnum nature) {
         return (root, query, criteriaBuilder) -> {
