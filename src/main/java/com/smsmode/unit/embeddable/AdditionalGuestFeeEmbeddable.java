@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AdditionalGuestFeeEmbeddable {
     @Positive(message = "Fee per person per night must be positive")
-    private Integer feePPPN;
+    private Integer feePpPn;
 
     @Positive(message = "Guest count must be positive")
     private Integer guestCount;

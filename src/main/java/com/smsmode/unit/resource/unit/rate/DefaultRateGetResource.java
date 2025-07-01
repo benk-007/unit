@@ -19,5 +19,4 @@ import lombok.Data;
 public class DefaultRateGetResource {
     private RentalBaseRateGetResource rentalBaseRate;
     private AdditionalGuestFeeGetResource additionalGuestFee;
-
 }

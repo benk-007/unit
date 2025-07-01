@@ -1,21 +1,22 @@
-package com.smsmode.unit.embeddable;
+/**
+ * <p>Copyright (C) Calade Technologies, Inc - All Rights Reserved Unauthorized copying of this
+ * file, via any medium is strictly prohibited Proprietary and confidential
+ */
+package com.smsmode.unit.resource.unit.rate;
 
-import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-import java.math.BigDecimal;
+/**
+ * TODO: add your documentation
+ *
+ * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
+ * <p>Created 01 Jul 2025</p>
+ */
+@Data
+public class BaseRatePostResource {
 
-@Getter
-@Setter
-@Embeddable
-@NoArgsConstructor
-@AllArgsConstructor
-public class RentalBaseRateEmbeddable{
     @NotNull(message = "Nightly rate is required")
     @Positive(message = "Nightly rate must be positive")
     private Integer nightly;
@@ -36,4 +37,3 @@ public class RentalBaseRateEmbeddable{
     @Positive(message = "Maximum stay must be positive")
     private Integer maxStay;
 }
-

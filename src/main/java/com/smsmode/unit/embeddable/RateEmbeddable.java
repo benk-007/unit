@@ -26,7 +26,7 @@ import lombok.Setter;
 public class RateEmbeddable {
     @Embedded
     @Valid
-    private RentalBaseRateEmbeddable rentalBaseRate;
+    private BasePricingEmbeddable basePricing;
 
     @Embedded
     @Valid

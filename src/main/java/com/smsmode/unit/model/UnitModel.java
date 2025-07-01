@@ -85,5 +85,5 @@ public class UnitModel extends AbstractBaseModel {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "X_UNIT_RATE", joinColumns = @JoinColumn(name = "UNIT_ID"),
             inverseJoinColumns = @JoinColumn(name = "RATE_ID"))
-    private Set<RateModel> rateTables = new HashSet<>();
+    private Set<RatesTableModel> rateTables = new HashSet<>();
 }
