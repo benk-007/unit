@@ -13,8 +13,8 @@ import com.smsmode.unit.model.RatesTableModel;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableItemGetResource;
-import com.smsmode.unit.resource.unit.ratestable.RatesTablePatchResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTablePostResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatesTablePatchResource;
 import com.smsmode.unit.service.RatesTableService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,11 +59,15 @@ public class RatesTableServiceImpl implements RatesTableService {
 
     @Override
     public ResponseEntity<RatesTableGetResource> updateById(String ratesTableId, RatesTablePatchResource ratesTablePatchResource) {
-        return null;
+        RatesTableModel ratesTableModel = ratesTableDaoService.findOneBy(RatesTableSpecification.withIdEqual(ratesTableId));
+        ratesTableModel = ratesTableMapper.patchResourceToModel(ratesTablePatchResource, ratesTableModel);
+        ratesTableModel = ratesTableDaoService.save(ratesTableModel);
+        return ResponseEntity.ok(ratesTableMapper.modelToGetResource(ratesTableModel));
     }
 
     @Override
     public ResponseEntity<Void> deleteById(String ratesTableId) {
-        return null;
+        ratesTableDaoService.deleteBy(RatesTableSpecification.withIdEqual(ratesTableId));
+        return ResponseEntity.noContent().build();
     }
 }

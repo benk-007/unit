@@ -7,7 +7,7 @@ package com.smsmode.unit.controller.impl;
 import com.smsmode.unit.controller.RatesTableController;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableItemGetResource;
-import com.smsmode.unit.resource.unit.ratestable.RatesTablePatchResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatesTablePatchResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTablePostResource;
 import com.smsmode.unit.service.RatesTableService;
 import lombok.RequiredArgsConstructor;

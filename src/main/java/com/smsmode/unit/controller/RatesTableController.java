@@ -6,7 +6,7 @@ package com.smsmode.unit.controller;
 
 import com.smsmode.unit.resource.unit.ratestable.RatesTableGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableItemGetResource;
-import com.smsmode.unit.resource.unit.ratestable.RatesTablePatchResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatesTablePatchResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTablePostResource;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -31,10 +31,10 @@ public interface RatesTableController {
     @PostMapping
     ResponseEntity<RatesTableGetResource> postRatesTable(@RequestBody @Valid RatesTablePostResource ratesTablePostResource);
 
-    @PatchMapping("/{ratesTableId}")
+    @PatchMapping("{ratesTableId}")
     ResponseEntity<RatesTableGetResource> patchRatesTableById(@PathVariable("ratesTableId") String ratesTableId, @RequestBody @Valid RatesTablePatchResource ratesTablePatchResource);
 
-    @DeleteMapping("/{ratesTableId}")
+    @DeleteMapping("{ratesTableId}")
     ResponseEntity<Void> deleteRatesTableById(@PathVariable("ratesTableId") String ratesTableId);
 
 }

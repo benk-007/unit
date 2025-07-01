@@ -2,11 +2,9 @@
  * <p>Copyright (C) Calade Technologies, Inc - All Rights Reserved Unauthorized copying of this
  * file, via any medium is strictly prohibited Proprietary and confidential
  */
-package com.smsmode.unit.resource.unit.ratestable;
+package com.smsmode.unit.resource.unit.ratestable.patch;
 
-import com.smsmode.unit.resource.common.AuditGetResource;
-import com.smsmode.unit.resource.unit.rate.DaySpecificPricingGetResource;
-import com.smsmode.unit.resource.unit.rate.RateGetResource;
+import jakarta.validation.Valid;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -19,12 +17,12 @@ import java.util.Set;
  * <p>Created 30 Jun 2025</p>
  */
 @Data
-public class RatesTableGetResource {
-    private String id;
+public class RatesTablePatchResource {
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
-    private RateGetResource rate;
-    private Set<DaySpecificPricingGetResource> daySpecificPrices;
-    private AuditGetResource audit;
+    @Valid
+    private RatePatchResource rate;
+    @Valid
+    private Set<DaySpecificPricingPatchResource> daySpecificPrices;
 }

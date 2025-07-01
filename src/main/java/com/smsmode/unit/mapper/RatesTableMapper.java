@@ -10,6 +10,7 @@ import com.smsmode.unit.resource.common.AuditGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableItemGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTablePostResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatesTablePatchResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 
@@ -32,6 +33,10 @@ public abstract class RatesTableMapper {
     @Mapping(target = "unit", ignore = true)
     public abstract RatesTableModel postResourceToModel(RatesTablePostResource ratesTablePostResource);
 
+    @Mapping(target = "unit", ignore = true)
+    public abstract RatesTableModel patchResourceToModel(RatesTablePatchResource ratesTablePatchResource,
+                                                         @MappingTarget RatesTableModel ratesTableModel);
+
     public abstract RatesTableGetResource modelToGetResource(RatesTableModel ratesTableModel);
 
     @AfterMapping
@@ -41,6 +46,7 @@ public abstract class RatesTableMapper {
 
 
     public abstract AuditGetResource modelToAuditResource(AbstractBaseModel baseModel);
+
 
 
 

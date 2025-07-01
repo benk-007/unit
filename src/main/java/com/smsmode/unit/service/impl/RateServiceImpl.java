@@ -9,7 +9,7 @@ import com.smsmode.unit.dao.service.UnitDaoService;
 import com.smsmode.unit.mapper.RatesTableMapper;
 import com.smsmode.unit.model.RatesTableModel;
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
-import com.smsmode.unit.resource.unit.rate.RatePatchResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import com.smsmode.unit.service.RateService;
 import lombok.RequiredArgsConstructor;

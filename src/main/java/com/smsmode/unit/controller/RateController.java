@@ -5,7 +5,7 @@
 package com.smsmode.unit.controller;
 
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
-import com.smsmode.unit.resource.unit.rate.RatePatchResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

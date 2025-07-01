@@ -6,7 +6,7 @@ package com.smsmode.unit.service;
 
 import com.smsmode.unit.resource.unit.ratestable.RatesTableGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableItemGetResource;
-import com.smsmode.unit.resource.unit.ratestable.RatesTablePatchResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatesTablePatchResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTablePostResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

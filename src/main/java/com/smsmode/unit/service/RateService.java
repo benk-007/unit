@@ -4,7 +4,7 @@
  */
 package com.smsmode.unit.service;
 
-import com.smsmode.unit.resource.unit.rate.RatePatchResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
 import org.springframework.data.domain.Page;

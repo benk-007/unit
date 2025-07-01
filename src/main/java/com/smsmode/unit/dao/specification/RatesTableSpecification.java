@@ -35,6 +35,11 @@ public class RatesTableSpecification {
         };
     }
 
+    public static Specification<RatesTableModel> withIdEqual(String ratesTableId) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(RatesTableModel_.id), ratesTableId);
+    }
+
     /*private RatesTableSpecification() {
     }
     public static Specification<RatesTableModel> withIdEqual(String rateId) {
