@@ -60,6 +60,7 @@ public abstract class UnitMapper {
     }
 
     @Mapping(source = "parentUnit.id", target = "parentUnit")
+    @Mapping(source = "nature", target = "nature")
     public abstract UnitGetResource modelToGetResource(UnitModel unitModel);
 
     @AfterMapping
@@ -72,6 +73,7 @@ public abstract class UnitMapper {
     public abstract UnitModel infosPatchResourceToModel(UnitInfosPatchResource unitInfosPatchResource, @MappingTarget UnitModel unit);
 
     @Mapping(source = "parentUnit.id", target = "parentUnit")
+    @Mapping(source="nature", target= "nature")
     public abstract UnitInfosGetResource modelToInfosGetResource(UnitModel unit);
 
     @AfterMapping
