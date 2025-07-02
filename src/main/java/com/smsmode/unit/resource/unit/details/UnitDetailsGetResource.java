@@ -35,4 +35,5 @@ public class UnitDetailsGetResource {
     private boolean smokingAllowed;
     private boolean petsAllowed;
     private Set<AmenityEnum> amenities;
+    private String parentUnit;
 }
