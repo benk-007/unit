@@ -58,7 +58,7 @@ public abstract class UnitMapper {
         }
     }
 
-
+    @Mapping(source = "parentUnit.id", target = "parentUnit")
     public abstract UnitGetResource modelToGetResource(UnitModel unitModel);
 
     @AfterMapping
@@ -78,7 +78,6 @@ public abstract class UnitMapper {
         unitInfosGetResource.setAudit(this.modelToAuditResource(unit));
     }
 
-    @Mapping(source = "parentUnit.id", target = "parentUnit")
     public abstract UnitDetailsGetResource modelToDetailsGetResource(UnitModel unit);
 
     public abstract UnitModel detailsPatchResourceToModel(UnitDetailsPatchResource unitDetailsPatchResource, @MappingTarget UnitModel unit);

@@ -24,4 +24,5 @@ public class UnitGetResource {
     private ContactEmbeddable contact;
     private AddressEmbeddable address;
     private boolean readiness;
+    private String parentUnit;
 }
