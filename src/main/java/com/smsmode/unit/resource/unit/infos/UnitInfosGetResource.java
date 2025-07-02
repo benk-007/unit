@@ -25,4 +25,5 @@ public class UnitInfosGetResource {
     private AddressEmbeddable address;
     private boolean readiness;
     private String calendarColor;
+    private String parentUnit;
 }

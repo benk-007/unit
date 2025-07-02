@@ -70,6 +70,7 @@ public abstract class UnitMapper {
 
     public abstract UnitModel infosPatchResourceToModel(UnitInfosPatchResource unitInfosPatchResource, @MappingTarget UnitModel unit);
 
+    @Mapping(source = "parentUnit.id", target = "parentUnit")
     public abstract UnitInfosGetResource modelToInfosGetResource(UnitModel unit);
 
     @AfterMapping
