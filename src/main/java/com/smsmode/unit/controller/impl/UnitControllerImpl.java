@@ -6,6 +6,7 @@ package com.smsmode.unit.controller.impl;
 
 import com.smsmode.unit.controller.UnitController;
 import com.smsmode.unit.enumeration.UnitNatureEnum;
+import com.smsmode.unit.resource.unit.SubUnitListResource;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,5 +44,21 @@ public class UnitControllerImpl implements UnitController {
     @Override
     public ResponseEntity<UnitItemGetResource> postUnit(UnitPostResource unitPostResource) {
         return unitService.create(unitPostResource);
+    }
+
+    @Override
+    public ResponseEntity<UnitItemGetResource> addSubUnitToMultiUnit(String parentUnitId, SubUnitListResource subUnitListResource) {
+        return unitService.addSubUnitToMultiUnit(parentUnitId, subUnitListResource);
+    }
+
+    @Override
+    public ResponseEntity<Void> detachSubUnit(String subUnitId){
+        unitService.detachSubUnit(subUnitId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Page<UnitItemGetResource>> getSubUnitsOfMultiUnit(String unitId, String search, Pageable pageable) {
+        return unitService.getSubUnitsOfMultiUnit(unitId, search, pageable);
     }
 }

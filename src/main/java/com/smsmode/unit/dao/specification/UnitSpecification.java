@@ -60,4 +60,13 @@ public class UnitSpecification {
             }
         };
     }
+
+    public static Specification<UnitModel> withParentUnitId(String parentId) {
+        return (root, query, cb) -> {
+            if (parentId == null) {
+                return null;
+            }
+            return cb.equal(root.get("parentUnit").get("id"), parentId);
+        };
+    }
 }

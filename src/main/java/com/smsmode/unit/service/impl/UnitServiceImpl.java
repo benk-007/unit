@@ -9,10 +9,7 @@ import com.smsmode.unit.dao.specification.UnitSpecification;
 import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.mapper.UnitMapper;
 import com.smsmode.unit.model.UnitModel;
-import com.smsmode.unit.resource.unit.SubUnitResource;
-import com.smsmode.unit.resource.unit.UnitGetResource;
-import com.smsmode.unit.resource.unit.UnitItemGetResource;
-import com.smsmode.unit.resource.unit.UnitPostResource;
+import com.smsmode.unit.resource.unit.*;
 import com.smsmode.unit.service.UnitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -121,4 +118,80 @@ public class UnitServiceImpl implements UnitService {
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
         return ResponseEntity.ok(unitMapper.modelToGetResource(unit));
     }
+
+    @Override
+    public ResponseEntity<UnitItemGetResource> addSubUnitToMultiUnit(String parentUnitId, SubUnitListResource subUnitListResource) {
+
+        UnitModel parentUnit = unitDaoService.findById(parentUnitId);
+        if (parentUnit == null || parentUnit.getNature() != UnitNatureEnum.MULTI_UNIT) {
+            throw new IllegalArgumentException("Parent unit must exist and be of nature MULTI_UNIT.");
+        }
+
+        for (SubUnitResource subUnit : subUnitListResource.getSubUnits()) {
+            if (subUnit.getUnitId() != null) {
+                UnitModel existingUnit = unitDaoService.findById(subUnit.getUnitId());
+                if (existingUnit == null) {
+                    log.warn("Skipping sub-unit attachment: unit [{}] not found.", subUnit.getUnitId());
+                    continue;
+                }
+                existingUnit.setParentUnit(parentUnit);
+                unitDaoService.save(existingUnit);
+
+            } else if (subUnit.getName() != null && !subUnit.getName().isBlank()) {
+                UnitModel newSubUnit = new UnitModel();
+                newSubUnit.setName(subUnit.getName());
+                newSubUnit.setReadiness(Boolean.TRUE.equals(subUnit.getReadiness()));
+                newSubUnit.setNature(UnitNatureEnum.SINGLE);
+                newSubUnit.setParentUnit(parentUnit);
+
+                newSubUnit.setAddress(parentUnit.getAddress());
+                newSubUnit.setContact(parentUnit.getContact());
+
+                unitDaoService.save(newSubUnit);
+            } else {
+                log.warn("Skipping sub-unit: neither unitId nor name is provided.");
+            }
+        }
+
+        return ResponseEntity.ok(unitMapper.modelToItemGetResource(parentUnit));
+    }
+
+    @Override
+    public void detachSubUnit(String subUnitId) {
+        UnitModel subUnit = unitDaoService.findById(subUnitId);
+        if (subUnit == null) {
+            throw new IllegalArgumentException("Subunit not found");
+        }
+
+        if (subUnit.getParentUnit() == null) {
+            log.warn("Subunit [{}] is already detached", subUnitId);
+            return;
+        }
+
+        subUnit.setParentUnit(null);
+        unitDaoService.save(subUnit);
+    }
+
+    @Override
+    public ResponseEntity<Page<UnitItemGetResource>> getSubUnitsOfMultiUnit(String parentUnitId, String search, Pageable pageable) {
+        boolean isSearchEmpty = (search == null || search.isBlank());
+
+        Specification<UnitModel> spec = UnitSpecification.withParentUnitId(parentUnitId);
+
+        if (!isSearchEmpty) {
+            Specification<UnitModel> searchSpec = Specification
+                    .where(UnitSpecification.withNameLike(search))
+                    .or(UnitSpecification.withSubtitleLike(search));
+
+            spec = spec.and(searchSpec);
+        }
+
+        Page<UnitModel> subUnits = unitDaoService.findAllBy(spec, pageable);
+        Page<UnitItemGetResource> resourcePage = subUnits.map(unitMapper::modelToItemGetResource);
+
+        return ResponseEntity.ok(resourcePage);
+    }
+
+
+
 }

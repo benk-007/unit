@@ -32,4 +32,5 @@ public class UnitItemGetResource {
     private boolean readiness;
     private UnitNatureEnum nature;
     private List<UnitItemGetResource> subUnits;
+    private String parentUnit;
 }

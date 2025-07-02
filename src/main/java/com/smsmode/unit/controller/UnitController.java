@@ -5,6 +5,7 @@
 package com.smsmode.unit.controller;
 
 import com.smsmode.unit.enumeration.UnitNatureEnum;
+import com.smsmode.unit.resource.unit.SubUnitListResource;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
@@ -31,5 +32,19 @@ public interface UnitController {
 
     @PostMapping
     ResponseEntity<UnitItemGetResource> postUnit(@RequestBody @Valid UnitPostResource unitPostResource);
+
+    @PostMapping("/{unitId}/sub-units")
+    ResponseEntity<UnitItemGetResource> addSubUnitToMultiUnit(
+            @PathVariable("unitId") String parentUnitId,
+            @RequestBody @Valid SubUnitListResource subUnitListResource);
+
+    @PatchMapping("/{subUnitId}/detach")
+    ResponseEntity<Void> detachSubUnit(@PathVariable("subUnitId") String subUnitId);
+
+    @GetMapping("/{unitId}/sub-units")
+    ResponseEntity<Page<UnitItemGetResource>> getSubUnitsOfMultiUnit(
+            @PathVariable("unitId") String unitId,
+            @RequestParam(value = "search", required = false) String search,
+            Pageable pageable);
 
 }

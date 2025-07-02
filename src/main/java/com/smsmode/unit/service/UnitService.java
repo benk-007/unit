@@ -5,6 +5,7 @@
 package com.smsmode.unit.service;
 
 import com.smsmode.unit.enumeration.UnitNatureEnum;
+import com.smsmode.unit.resource.unit.SubUnitListResource;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
@@ -25,5 +26,11 @@ public interface UnitService {
     ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable);
 
     ResponseEntity<UnitGetResource> retrieveById(String unitId);
+
+    ResponseEntity<UnitItemGetResource> addSubUnitToMultiUnit(String parentUnitId, SubUnitListResource subUnitListResource);
+
+    void detachSubUnit(String subUnitId);
+
+    ResponseEntity<Page<UnitItemGetResource>> getSubUnitsOfMultiUnit(String parentUnitId, String search, Pageable pageable);
 
 }
