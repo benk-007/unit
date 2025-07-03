@@ -33,4 +33,5 @@ public class UnitItemGetResource {
     private UnitNatureEnum nature;
     private List<UnitItemGetResource> subUnits;
     private String parentUnit;
+    private int priority;
 }
