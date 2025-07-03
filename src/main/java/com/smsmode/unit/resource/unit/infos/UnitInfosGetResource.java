@@ -28,4 +28,5 @@ public class UnitInfosGetResource {
     private String calendarColor;
     private String parentUnit;
     private UnitNatureEnum nature;
+    private int priority;
 }

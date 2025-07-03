@@ -75,6 +75,7 @@ public abstract class UnitMapper {
 
     @Mapping(source = "parentUnit.id", target = "parentUnit")
     @Mapping(source="nature", target= "nature")
+    @Mapping(source = "priority", target = "priority")
     public abstract UnitInfosGetResource modelToInfosGetResource(UnitModel unit);
 
     @AfterMapping

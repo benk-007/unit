@@ -22,4 +22,5 @@ public class UnitInfosPatchResource {
     private AddressEmbeddable address;
     private Boolean readiness;
     private String calendarColor;
+    private int priority;
 }

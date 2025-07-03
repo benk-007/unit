@@ -41,37 +41,14 @@ public class UnitServiceImpl implements UnitService {
         UnitModel unitModel = unitMapper.postResourceToModel(unitPostResource);
         unitModel = unitDaoService.save(unitModel);
 
-        if(unitModel.getNature() == UnitNatureEnum.MULTI_UNIT && unitPostResource.getSubUnits() != null) {
+        if (unitModel.getNature() == UnitNatureEnum.MULTI_UNIT && unitPostResource.getSubUnits() != null) {
             for (SubUnitResource subUnit : unitPostResource.getSubUnits()) {
-
-                if (subUnit.getUnitId() == null && (subUnit.getName() == null || subUnit.getName().isBlank())) {
-                    log.warn("Skipping sub-unit creation: both unitId and name are null or blank.");
-                    continue;
-                }
-
-                UnitModel childUnit;
-                if (subUnit.getUnitId() != null){
-                    childUnit = unitDaoService.findById(subUnit.getUnitId());
-                    log.debug("Attaching existing unit [{}] to parent [{}]", subUnit.getUnitId(), unitModel.getId());
-                } else {
-                    childUnit = new UnitModel();
-                    childUnit.setAddress(unitModel.getAddress());
-                    childUnit.setContact(unitModel.getContact());
-                    childUnit.setNature(UnitNatureEnum.SINGLE);
-                    childUnit.setName(subUnit.getName());
-                    childUnit.setPriority(subUnit.getPriority());
-                    childUnit.setReadiness(Boolean.TRUE.equals(subUnit.getReadiness()));
-                    log.debug("Creating new sub-unit: {}", subUnit.getName());
-                }
-
-                childUnit.setParentUnit(unitModel);
-                unitDaoService.save(childUnit);
+                processSubUnit(unitModel, subUnit);
             }
         }
 
         return ResponseEntity.created(URI.create("")).body(unitMapper.modelToItemGetResource(unitModel));
     }
-
 
     @Override
     public ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable) {
@@ -128,29 +105,7 @@ public class UnitServiceImpl implements UnitService {
         }
 
         for (SubUnitResource subUnit : subUnitListResource.getSubUnits()) {
-            if (subUnit.getUnitId() != null) {
-                UnitModel existingUnit = unitDaoService.findById(subUnit.getUnitId());
-                if (existingUnit == null) {
-                    log.warn("Skipping sub-unit attachment: unit [{}] not found.", subUnit.getUnitId());
-                    continue;
-                }
-                existingUnit.setParentUnit(parentUnit);
-                unitDaoService.save(existingUnit);
-
-            } else if (subUnit.getName() != null && !subUnit.getName().isBlank()) {
-                UnitModel newSubUnit = new UnitModel();
-                newSubUnit.setName(subUnit.getName());
-                newSubUnit.setReadiness(Boolean.TRUE.equals(subUnit.getReadiness()));
-                newSubUnit.setNature(UnitNatureEnum.SINGLE);
-                newSubUnit.setParentUnit(parentUnit);
-
-                newSubUnit.setAddress(parentUnit.getAddress());
-                newSubUnit.setContact(parentUnit.getContact());
-
-                unitDaoService.save(newSubUnit);
-            } else {
-                log.warn("Skipping sub-unit: neither unitId nor name is provided.");
-            }
+            processSubUnit(parentUnit, subUnit);
         }
 
         return ResponseEntity.ok(unitMapper.modelToItemGetResource(parentUnit));
@@ -192,6 +147,34 @@ public class UnitServiceImpl implements UnitService {
         return ResponseEntity.ok(resourcePage);
     }
 
+    private void processSubUnit(UnitModel parentUnit, SubUnitResource subUnit) {
+        if (subUnit.getUnitId() == null && (subUnit.getName() == null || subUnit.getName().isBlank())) {
+            log.warn("Skipping sub-unit: both unitId and name are null or blank.");
+            return;
+        }
 
+        UnitModel childUnit;
+
+        if (subUnit.getUnitId() != null) {
+            childUnit = unitDaoService.findById(subUnit.getUnitId());
+            if (childUnit == null) {
+                log.warn("Skipping sub-unit attachment: unit [{}] not found.", subUnit.getUnitId());
+                return;
+            }
+            log.debug("Attaching existing unit [{}] to parent [{}]", subUnit.getUnitId(), parentUnit.getId());
+        } else {
+            childUnit = new UnitModel();
+            childUnit.setName(subUnit.getName());
+            childUnit.setNature(UnitNatureEnum.SINGLE);
+            childUnit.setReadiness(Boolean.TRUE.equals(subUnit.getReadiness()));
+            childUnit.setAddress(parentUnit.getAddress());
+            childUnit.setContact(parentUnit.getContact());
+            log.debug("Creating new sub-unit: {}", subUnit.getName());
+        }
+
+        childUnit.setParentUnit(parentUnit);
+        childUnit.setPriority(subUnit.getPriority() != null ? subUnit.getPriority() : 1);
+        unitDaoService.save(childUnit);
+    }
 
 }
