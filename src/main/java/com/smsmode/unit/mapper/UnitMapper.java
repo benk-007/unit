@@ -36,6 +36,7 @@ public abstract class UnitMapper {
 
     @Mapping(source = "nature", target = "nature")
     @Mapping(source = "parentUnit.id", target = "parentUnit")
+    @Mapping(source = "priority", target = "priority")
     public abstract UnitItemGetResource modelToItemGetResource(UnitModel unitModel);
 
     protected com.smsmode.unit.dao.service.UnitDaoService unitDaoService;
