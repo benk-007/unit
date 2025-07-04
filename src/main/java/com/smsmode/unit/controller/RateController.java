@@ -5,7 +5,7 @@
 package com.smsmode.unit.controller;
 
 import com.smsmode.unit.resource.unit.rate.RateGetResource;
-import com.smsmode.unit.resource.unit.rate.RatePatchResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatePatchResource;
 import com.smsmode.unit.resource.unit.rate.RatePostResource;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -18,13 +18,20 @@ import org.springframework.web.bind.annotation.*;
 public interface RateController {
 
     @GetMapping
-    ResponseEntity<Page<RateGetResource>> getRates(@RequestParam(value = "search", required = false) String search, Pageable pageable);
+    ResponseEntity<Page<RateGetResource>> getRates(
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "unitId", required = false) String unitId,
+            Pageable pageable);
 
     @PostMapping
-    ResponseEntity<RateGetResource> postRate(@RequestBody @Valid RatePostResource ratePostResource);
+    ResponseEntity<RateGetResource> postRate(
+            @RequestBody @Valid RatePostResource ratePostResource,
+            @RequestParam(value = "unitId", required = false) String unitId);
 
     @PatchMapping("/{rateId}")
-    ResponseEntity<RateGetResource> patchRate(@PathVariable("rateId") String rateId, @RequestBody @Valid RatePatchResource ratePatchResource);
+    ResponseEntity<RateGetResource> patchRate(
+            @PathVariable("rateId") String rateId,
+            @RequestBody @Valid RatePatchResource ratePatchResource);
 
     @DeleteMapping("/{rateId}")
     @PreAuthorize("permitAll()")

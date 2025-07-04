@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -80,4 +81,9 @@ public class UnitModel extends AbstractBaseModel {
 
     @Embedded
     private RateEmbeddable defaultRate;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "X_UNIT_RATE", joinColumns = @JoinColumn(name = "UNIT_ID"),
+            inverseJoinColumns = @JoinColumn(name = "RATE_ID"))
+    private Set<RatesTableModel> rateTables = new HashSet<>();
 }

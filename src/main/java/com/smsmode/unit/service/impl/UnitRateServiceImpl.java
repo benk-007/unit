@@ -7,7 +7,7 @@ package com.smsmode.unit.service.impl;
 import com.smsmode.unit.dao.service.UnitDaoService;
 import com.smsmode.unit.dao.specification.UnitSpecification;
 import com.smsmode.unit.embeddable.RateEmbeddable;
-import com.smsmode.unit.mapper.RateMapper;
+import com.smsmode.unit.mapper.RatesTableMapper;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.resource.unit.rate.DefaultRateGetResource;
 import com.smsmode.unit.resource.unit.rate.DefaultRatePatchResource;
@@ -29,22 +29,23 @@ import org.springframework.stereotype.Service;
 public class UnitRateServiceImpl implements UnitRateService {
 
     private final UnitDaoService unitDaoService;
-    private final RateMapper rateMapper;
+    private final RatesTableMapper ratesTableMapper;
 
     @Override
     public ResponseEntity<DefaultRateGetResource> retrieveDefaultRate(String unitId) {
-        log.debug("Retrieving default rate for unit: {}", unitId);
+/*        log.debug("Retrieving default rate for unit: {}", unitId);
 
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
-        DefaultRateGetResource response = rateMapper.embeddableToGetResource(unit.getDefaultRate());
+        DefaultRateGetResource response = ratesTableMapper.embeddableToGetResource(unit.getDefaultRate());
 
         log.debug("Successfully retrieved default rate for unit: {}", unitId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);*/
+        return null;
     }
 
     @Override
     public ResponseEntity<DefaultRateGetResource> updateDefaultRate(String unitId, DefaultRatePatchResource patchResource) {
-        log.debug("Updating default rate for unit: {}", unitId);
+        /*log.debug("Updating default rate for unit: {}", unitId);
 
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
 
@@ -52,21 +53,22 @@ public class UnitRateServiceImpl implements UnitRateService {
         if (unit.getDefaultRate() == null) {
             // Creation scenario: create new RateEmbeddable from patch resource
             log.debug("Creating new default rate for unit: {}", unitId);
-            RateEmbeddable newRate = rateMapper.patchResourceToEmbeddable(patchResource);
+            RateEmbeddable newRate = ratesTableMapper.patchResourceToEmbeddable(patchResource);
             unit.setDefaultRate(newRate);
         } else {
             // Update scenario: update existing RateEmbeddable
             log.debug("Updating existing default rate for unit: {}", unitId);
-            rateMapper.updateEmbeddableFromPatchResource(patchResource, unit.getDefaultRate());
+            ratesTableMapper.updateEmbeddableFromPatchResource(patchResource, unit.getDefaultRate());
         }
 
         // Save the updated unit
         unit = unitDaoService.save(unit);
 
         // Transform to response resource
-        DefaultRateGetResource response = rateMapper.embeddableToGetResource(unit.getDefaultRate());
+        DefaultRateGetResource response = ratesTableMapper.embeddableToGetResource(unit.getDefaultRate());
 
         log.info("Successfully updated default rate for unit: {}", unitId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(response);*/
+        return null;
     }
 }

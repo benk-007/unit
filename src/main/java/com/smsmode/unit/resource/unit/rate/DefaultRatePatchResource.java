@@ -4,6 +4,7 @@
  */
 package com.smsmode.unit.resource.unit.rate;
 
+import com.smsmode.unit.resource.unit.ratestable.patch.AdditionalGuestFeePatchResource;
 import jakarta.validation.Valid;
 import lombok.Data;
 

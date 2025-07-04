@@ -16,28 +16,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "X_RATE")
-public class RateModel extends AbstractBaseModel {
+@Table(name = "X_RATES_TABLE")
+public class RatesTableModel extends AbstractBaseModel {
 
     @NotBlank(message = "Rate name is required")
-    @Column(name = "RATE_NAME", nullable = false)
-    private String rateName;
+    @Column(name = "NAME", nullable = false)
+    private String name;
 
     @NotNull(message = "From date is required")
-    @Column(name = "FROM_DATE", nullable = false)
-    private LocalDate fromDate;
+    @Column(name = "START_DATE", nullable = false)
+    private LocalDate startDate;
 
     @NotNull(message = "Until date is required")
-    @Column(name = "UNTIL_DATE", nullable = false)
-    private LocalDate untilDate;
+    @Column(name = "END_DATE", nullable = false)
+    private LocalDate endDate;
 
     @Valid
     @Embedded
@@ -46,5 +46,8 @@ public class RateModel extends AbstractBaseModel {
     @Valid
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "X_DAY_SPECIFIC_PRICING", joinColumns = @JoinColumn(name = "RATE_ID"))
-    private List<DaySpecificPricingEmbeddable> daySpecificPricings = new ArrayList<>();
+    private Set<DaySpecificPricingEmbeddable> daySpecificPrices = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private UnitModel unit;
 }
