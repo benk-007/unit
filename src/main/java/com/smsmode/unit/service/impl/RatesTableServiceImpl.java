@@ -49,6 +49,13 @@ public class RatesTableServiceImpl implements RatesTableService {
     }
 
     @Override
+    public ResponseEntity<RatesTableGetResource> retrieveById(String ratesTableId) {
+        Specification<RatesTableModel> specification = Specification.where(RatesTableSpecification.withIdEqual(ratesTableId));
+        RatesTableModel ratesTableModel = ratesTableDaoService.findOneBy(specification);
+        return ResponseEntity.ok(ratesTableMapper.modelToGetResource(ratesTableModel));
+    }
+
+    @Override
     public ResponseEntity<RatesTableGetResource> create(RatesTablePostResource ratesTablePostResource) {
         UnitModel unitModel = unitDaoService.findOneBy(UnitSpecification.withIdEqual(ratesTablePostResource.getUnitId()));
         RatesTableModel ratesTableModel = ratesTableMapper.postResourceToModel(ratesTablePostResource);

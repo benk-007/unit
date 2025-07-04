@@ -34,6 +34,11 @@ public class RatesTableControllerImpl implements RatesTableController {
     }
 
     @Override
+    public ResponseEntity<RatesTableGetResource> getRatesTableById(String ratesTableId) {
+        return ratesTableService.retrieveById(ratesTableId);
+    }
+
+    @Override
     public ResponseEntity<RatesTableGetResource> postRatesTable(RatesTablePostResource ratesTablePostResource) {
         return ratesTableService.create(ratesTablePostResource);
     }

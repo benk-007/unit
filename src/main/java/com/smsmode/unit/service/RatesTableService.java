@@ -6,8 +6,8 @@ package com.smsmode.unit.service;
 
 import com.smsmode.unit.resource.unit.ratestable.RatesTableGetResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTableItemGetResource;
-import com.smsmode.unit.resource.unit.ratestable.patch.RatesTablePatchResource;
 import com.smsmode.unit.resource.unit.ratestable.RatesTablePostResource;
+import com.smsmode.unit.resource.unit.ratestable.patch.RatesTablePatchResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,13 @@ import org.springframework.http.ResponseEntity;
 public interface RatesTableService {
     ResponseEntity<Page<RatesTableItemGetResource>> retrieveAll(String search, String unitId, Pageable pageable);
 
+    ResponseEntity<RatesTableGetResource> retrieveById(String ratesTableId);
+
     ResponseEntity<RatesTableGetResource> create(RatesTablePostResource ratesTablePostResource);
 
     ResponseEntity<RatesTableGetResource> updateById(String ratesTableId, RatesTablePatchResource ratesTablePatchResource);
 
     ResponseEntity<Void> deleteById(String ratesTableId);
+
 
 }

@@ -4,7 +4,6 @@
  */
 package com.smsmode.unit.resource.unit.ratestable;
 
-import com.smsmode.unit.embeddable.BasePricingEmbeddable;
 import com.smsmode.unit.resource.common.AuditGetResource;
 import com.smsmode.unit.resource.unit.rate.get.BasePricingGetResource;
 import lombok.Data;
@@ -21,8 +20,8 @@ import java.time.LocalDate;
 public class RatesTableItemGetResource {
     private String id;
     private String name;
-    private LocalDate from;
-    private LocalDate to;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private BasePricingGetResource basePricing;
     private AuditGetResource audit;
 }

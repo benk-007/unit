@@ -28,6 +28,9 @@ public interface RatesTableController {
                                                                         @RequestParam(value = "unitId") String unitId,
                                                                         Pageable pageable);
 
+    @GetMapping("{ratesTableId}")
+    ResponseEntity<RatesTableGetResource> getRatesTableById(@PathVariable("ratesTableId") String ratesTableId);
+
     @PostMapping
     ResponseEntity<RatesTableGetResource> postRatesTable(@RequestBody @Valid RatesTablePostResource ratesTablePostResource);
 
