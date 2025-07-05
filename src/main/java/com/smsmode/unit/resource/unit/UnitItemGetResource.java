@@ -6,8 +6,11 @@ package com.smsmode.unit.resource.unit;
 
 import com.smsmode.unit.embeddable.AddressEmbeddable;
 import com.smsmode.unit.embeddable.ContactEmbeddable;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.resource.common.AuditGetResource;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * TODO: add your documentation
@@ -19,7 +22,7 @@ import lombok.Data;
 public class UnitItemGetResource {
     private String id;
     private String name;
-    private String subtitle;
+    private String subTitle;
     private int beds;
     private int bathrooms;
     private AuditGetResource audit;
@@ -27,4 +30,8 @@ public class UnitItemGetResource {
     private AddressEmbeddable address;
     private OccupancyGetResource occupancy;
     private boolean readiness;
+    private UnitNatureEnum nature;
+    private List<UnitItemGetResource> subUnits;
+    private ParentUnitGetResource parent;
+    private int priority;
 }

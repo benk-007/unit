@@ -30,8 +30,6 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class UnitMapper {
 
-    public abstract UnitModel postResourceToModel(UnitPostResource unitPostResource);
-
     public abstract UnitItemGetResource modelToItemGetResource(UnitModel unitModel);
 
     @AfterMapping
@@ -45,6 +43,9 @@ public abstract class UnitMapper {
     public void afterModelToGetResource(UnitModel unitModel, @MappingTarget UnitGetResource unitGetResource) {
         unitGetResource.setAudit(this.modelToAuditResource(unitModel));
     }
+
+    public abstract UnitModel postResourceToModel(UnitPostResource unitPostResource);
+
 
     public abstract AuditGetResource modelToAuditResource(AbstractBaseModel baseModel);
 

@@ -4,23 +4,17 @@
  */
 package com.smsmode.unit.resource.unit;
 
-import com.smsmode.unit.embeddable.AddressEmbeddable;
-import com.smsmode.unit.embeddable.ContactEmbeddable;
 import lombok.Data;
 
 /**
  * TODO: add your documentation
  *
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
- * <p>Created 15 May 2025</p>
+ * <p>Created 04 Jul 2025</p>
  */
 @Data
-public class UnitInfosPatchResource {
+public class ParentUnitGetResource {
+    private String id;
     private String name;
-    private String subtitle;
-    private ContactEmbeddable contact;
-    private AddressEmbeddable address;
-    private Boolean readiness;
-    private String calendarColor;
-    private int priority;
+    private boolean readiness;
 }

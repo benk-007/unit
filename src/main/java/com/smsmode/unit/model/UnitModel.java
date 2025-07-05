@@ -28,14 +28,14 @@ import java.util.Set;
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
  * <p>Created 11 Apr 2025</p>
  */
-@NoArgsConstructor
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "X_UNIT")
 public class UnitModel extends AbstractBaseModel {
     private String name;
-    private String subtitle;
+    private String subTitle;
     @Embedded
     private AddressEmbeddable address;
     @Embedded
@@ -86,4 +86,19 @@ public class UnitModel extends AbstractBaseModel {
     @JoinTable(name = "X_UNIT_RATE", joinColumns = @JoinColumn(name = "UNIT_ID"),
             inverseJoinColumns = @JoinColumn(name = "RATE_ID"))
     private Set<RatesTableModel> rateTables = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_ID")
+    private UnitModel parent;
+
+    private Integer priority;
+
+    public UnitModel(String name, AddressEmbeddable address, ContactEmbeddable contact, boolean readiness, Integer priority) {
+        this.name = name;
+        this.address = address;
+        this.contact = contact;
+        this.readiness = readiness;
+        this.priority = priority;
+    }
+
 }

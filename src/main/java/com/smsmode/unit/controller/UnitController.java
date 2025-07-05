@@ -4,6 +4,8 @@
  */
 package com.smsmode.unit.controller;
 
+import com.smsmode.unit.enumeration.UnitNatureEnum;
+import com.smsmode.unit.resource.unit.SubUnitListResource;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
 import com.smsmode.unit.resource.unit.UnitPostResource;
@@ -23,12 +25,30 @@ import org.springframework.web.bind.annotation.*;
 public interface UnitController {
 
     @GetMapping
-    ResponseEntity<Page<UnitItemGetResource>> getAllUnits(@RequestParam(value = "search", required = false) String search, Pageable pageable);
+    ResponseEntity<Page<UnitItemGetResource>> getAllUnits(
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "nature", required = false) UnitNatureEnum nature,
+            @RequestParam(value = "withParent", required = false) Boolean withParent,
+            Pageable pageable);
 
     @GetMapping("/{unitId}")
     ResponseEntity<UnitGetResource> getUnitById(@PathVariable("unitId") String unitId);
 
     @PostMapping
-    ResponseEntity<UnitItemGetResource> postUnit(@RequestBody @Valid UnitPostResource unitPostResource);
+    ResponseEntity<UnitGetResource> postUnit(@RequestBody @Valid UnitPostResource unitPostResource);
+
+    @PostMapping("/{unitId}/sub-units")
+    ResponseEntity<UnitItemGetResource> addSubUnitToMultiUnit(
+            @PathVariable("unitId") String parentUnitId,
+            @RequestBody @Valid SubUnitListResource subUnitListResource);
+
+    @PatchMapping("/{subUnitId}/detach")
+    ResponseEntity<Void> detachSubUnit(@PathVariable("subUnitId") String subUnitId);
+
+    @GetMapping("/{unitId}/sub-units")
+    ResponseEntity<Page<UnitItemGetResource>> getSubUnitsOfMultiUnit(
+            @PathVariable("unitId") String unitId,
+            @RequestParam(value = "search", required = false) String search,
+            Pageable pageable);
 
 }
