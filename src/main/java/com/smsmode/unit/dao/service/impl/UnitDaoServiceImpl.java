@@ -6,6 +6,7 @@ package com.smsmode.unit.dao.service.impl;
 
 import com.smsmode.unit.dao.repository.UnitRepository;
 import com.smsmode.unit.dao.service.UnitDaoService;
+import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.exception.ResourceNotFoundException;
 import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
 import com.smsmode.unit.model.UnitModel;
@@ -67,6 +68,11 @@ public class UnitDaoServiceImpl implements UnitDaoService {
     public List<UnitModel> findByParentUnit(UnitModel parent) {
         return unitRepository.findAll((root, query, cb) ->
                 cb.equal(root.get("parentUnit"), parent));
+    }
+
+    @Override
+    public void updateTypeByParentUnitId(String parentUnitId, UnitTypeEnum type) {
+        unitRepository.updateTypeByParentUnitId(parentUnitId, type);
     }
 
 

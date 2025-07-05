@@ -4,10 +4,13 @@
  */
 package com.smsmode.unit.dao.repository;
 
+import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.model.UnitModel;
-import com.smsmode.unit.resource.unit.UnitPostResource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -18,4 +21,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UnitRepository extends JpaRepository<UnitModel, String>, JpaSpecificationExecutor<UnitModel> {
+    @Modifying
+    @Query("UPDATE UnitModel u SET u.type = :type WHERE u.parent.id = :parentUnitId")
+    void updateTypeByParentUnitId(@Param("parentUnitId") String parentUnitId, @Param("type") UnitTypeEnum type);
 }

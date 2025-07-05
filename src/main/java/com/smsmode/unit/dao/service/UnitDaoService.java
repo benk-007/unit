@@ -4,6 +4,7 @@
  */
 package com.smsmode.unit.dao.service;
 
+import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.model.UnitModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,4 +28,7 @@ public interface UnitDaoService {
     UnitModel findById(String unitId);
 
     List<UnitModel> findByParentUnit(UnitModel parent);
+
+    void updateTypeByParentUnitId(String id, UnitTypeEnum type);
+
 }

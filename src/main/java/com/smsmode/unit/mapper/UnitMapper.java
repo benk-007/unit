@@ -63,17 +63,17 @@ public abstract class UnitMapper {
     public abstract UnitInfosGetResource modelToInfosGetResource(UnitModel unit);
 
     @AfterMapping
-    public void afterModelToInfosGetResource(UnitModel unit, @MappingTarget UnitInfosGetResource unitInfosGetResource) {
-        unitInfosGetResource.setAudit(this.modelToAuditResource(unit));
+    public void afterModelToInfosGetResource(UnitModel unitModel, @MappingTarget UnitInfosGetResource unitInfosGetResource) {
+        unitInfosGetResource.setAudit(this.modelToAuditResource(unitModel));
+        if (!ObjectUtils.isEmpty(unitInfosGetResource.getParent())) {
+            unitInfosGetResource.setAddress(unitModel.getParent().getAddress());
+            unitInfosGetResource.setContact(unitModel.getParent().getContact());
+        }
     }
 
     public abstract UnitDetailsGetResource modelToDetailsGetResource(UnitModel unit);
 
     public abstract UnitModel detailsPatchResourceToModel(UnitDetailsPatchResource unitDetailsPatchResource, @MappingTarget UnitModel unit);
 
-/*    @Mapping(target = "unit", ignore = true)
-    public abstract RoomModel roomPatchResourceToModel(RoomPatchResource room);
 
-    @Mapping(target = "unit", ignore = true)
-    public abstract RoomModel roomPatchResourceToModel(RoomPatchResource room, @MappingTarget RoomModel roomModel);*/
 }

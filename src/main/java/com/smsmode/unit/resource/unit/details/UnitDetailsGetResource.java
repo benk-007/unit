@@ -7,10 +7,12 @@ package com.smsmode.unit.resource.unit.details;
 import com.smsmode.unit.embeddable.OccupancyEmbeddable;
 import com.smsmode.unit.enumeration.AmenityEnum;
 import com.smsmode.unit.enumeration.FloorSizeUnitEnum;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.enumeration.UnitTypeEnum;
+import com.smsmode.unit.resource.unit.ParentUnitGetResource;
+import com.smsmode.unit.resource.unit.UnitGetResource;
 import lombok.Data;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,4 +37,6 @@ public class UnitDetailsGetResource {
     private boolean smokingAllowed;
     private boolean petsAllowed;
     private Set<AmenityEnum> amenities;
+    private ParentUnitGetResource parent;
+    private UnitNatureEnum nature;
 }
