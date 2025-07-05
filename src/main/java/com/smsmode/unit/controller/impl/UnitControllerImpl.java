@@ -42,7 +42,7 @@ public class UnitControllerImpl implements UnitController {
     }
 
     @Override
-    public ResponseEntity<UnitItemGetResource> postUnit(UnitPostResource unitPostResource) {
+    public ResponseEntity<UnitGetResource> postUnit(UnitPostResource unitPostResource) {
         return unitService.create(unitPostResource);
     }
 

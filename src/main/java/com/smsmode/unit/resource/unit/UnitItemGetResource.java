@@ -22,7 +22,7 @@ import java.util.List;
 public class UnitItemGetResource {
     private String id;
     private String name;
-    private String subtitle;
+    private String subTitle;
     private int beds;
     private int bathrooms;
     private AuditGetResource audit;
@@ -32,6 +32,6 @@ public class UnitItemGetResource {
     private boolean readiness;
     private UnitNatureEnum nature;
     private List<UnitItemGetResource> subUnits;
-    private String parentUnit;
+    private ParentUnitGetResource parent;
     private int priority;
 }

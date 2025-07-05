@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
  */
 public interface UnitService {
 
-    ResponseEntity<UnitItemGetResource> create(UnitPostResource unitPostResource);
+    ResponseEntity<UnitGetResource> create(UnitPostResource unitPostResource);
 
     ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable);
 

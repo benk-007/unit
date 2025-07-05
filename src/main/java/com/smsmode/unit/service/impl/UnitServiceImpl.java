@@ -11,6 +11,7 @@ import com.smsmode.unit.mapper.UnitMapper;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.resource.unit.*;
 import com.smsmode.unit.service.UnitService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.net.URI;
 
@@ -36,57 +39,83 @@ public class UnitServiceImpl implements UnitService {
     private final UnitMapper unitMapper;
 
     @Override
-    public ResponseEntity<UnitItemGetResource> create(UnitPostResource unitPostResource) {
-
+    @Transactional
+    public ResponseEntity<UnitGetResource> create(UnitPostResource unitPostResource) {
+        log.debug("Map unit post resource to model ...");
         UnitModel unitModel = unitMapper.postResourceToModel(unitPostResource);
+        log.info("Unit model after mapping is: {}", unitModel);
+        log.debug("Saving unit model to database ...");
         unitModel = unitDaoService.save(unitModel);
+        log.info("Unit saved to database: {}", unitModel);
 
-        if (unitModel.getNature() == UnitNatureEnum.MULTI_UNIT && unitPostResource.getSubUnits() != null) {
-            for (SubUnitResource subUnit : unitPostResource.getSubUnits()) {
-                processSubUnit(unitModel, subUnit);
+        if (unitModel.getNature().equals(UnitNatureEnum.MULTI_UNIT) && !CollectionUtils.isEmpty(unitPostResource.getSubUnits())) {
+            log.debug("SubUnits passed to be created/attached to this multi-unit ...");
+            for (SubUnitResource subUnitResource : unitPostResource.getSubUnits()) {
+                log.debug("Subunit to save/attach: {}", subUnitResource);
+                UnitModel subUnit;
+                if (!ObjectUtils.isEmpty(subUnitResource.getUnitId())) {
+                    log.debug("Retrieve unit with Id: {} from database ...", subUnitResource.getUnitId());
+                    subUnit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(subUnitResource.getUnitId()));
+                    log.info("Attaching multi-unit to sub-unit: {} and set priority to 0 ...", subUnit);
+                    subUnit.setParent(unitModel);
+                    subUnit.setPriority(0);
+                    log.debug("Saving sub-unit to database ...");
+                } else {
+                    log.debug("Map sub-unit to model ...");
+                    subUnit = new UnitModel(subUnitResource.getName(), unitModel.getAddress(), unitModel.getContact(), subUnitResource.getReadiness(), subUnitResource.getPriority());
+                    subUnit.setParent(unitModel);
+                    log.debug("Sub-unit model after mapping is: {}", subUnit);
+                }
+                subUnit = unitDaoService.save(subUnit);
+                log.info("Sub-unit saved to database: {}", subUnit);
             }
         }
-
-        return ResponseEntity.created(URI.create("")).body(unitMapper.modelToItemGetResource(unitModel));
+        return ResponseEntity.created(URI.create("")).body(unitMapper.modelToGetResource(unitModel));
     }
 
     @Override
-    public ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature, Boolean withParent, Pageable pageable) {
-        boolean isSearchEmpty = (search == null || search.isBlank());
-        boolean areAllParamsNull = (search == null && nature == null && withParent == null);
-
-        if (!isSearchEmpty || areAllParamsNull) {
-            Specification<UnitModel> searchSpec = Specification
-                    .where(UnitSpecification.withNameLike(search))
-                    .or(UnitSpecification.withSubtitleLike(search));
-
-            Specification<UnitModel> spec = Specification
-                    .where(searchSpec)
-                    .and(UnitSpecification.withNature(nature))
-                    .and(UnitSpecification.withParentFilter(false));
-
-
-            Page<UnitModel> topLevelUnits = unitDaoService.findAllBy(spec, pageable);
-
-            Page<UnitItemGetResource> resourcePage = topLevelUnits.map(unitMapper::modelToItemGetResource);
-
-            return ResponseEntity.ok(resourcePage);
+    public ResponseEntity<Page<UnitItemGetResource>> retrieveAllByPage(String search, UnitNatureEnum nature,
+                                                                       Boolean withParent, Pageable pageable) {
+        Specification<UnitModel> unitSpecification;
+        log.debug("Constructing unit specification ...");
+        if (ObjectUtils.isEmpty(nature) && ObjectUtils.isEmpty(withParent)) {
+            log.debug("Nature & withParent query parameters are not set, apply search filter on name and subtitle. " +
+                    "Will retrieve only orphan units and multi units ...");
+            unitSpecification = Specification.where(UnitSpecification.withNameLike(search)
+                    .or(UnitSpecification.withSubTitleLike(search))).and(Specification.where(
+                    UnitSpecification.withNature(UnitNatureEnum.SINGLE).and(UnitSpecification.withParent(false))
+            ).or(UnitSpecification.withNature(UnitNatureEnum.MULTI_UNIT)));
+        } else {
+            log.debug("Nature or withParent query parameter are set. Will apply parameters accordingly ...");
+            unitSpecification = Specification.where(UnitSpecification.withNameLike(search)
+                            .or(UnitSpecification.withSubTitleLike(search))).and(UnitSpecification.withNature(nature))
+                    .and(UnitSpecification.withParent(withParent));
         }
-
-
-        Specification<UnitModel> searchSpec = Specification
-                .where(UnitSpecification.withNameLike(search))
-                .or(UnitSpecification.withSubtitleLike(search));
-
-        Specification<UnitModel> spec = Specification
-                .where(searchSpec)
-                .and(UnitSpecification.withNature(nature))
-                .and(UnitSpecification.withParentFilter(withParent));
-
-
-        Page<UnitModel> units = unitDaoService.findAllBy(spec, pageable);
-
-        return ResponseEntity.ok(units.map(unitMapper::modelToItemGetResource));
+        log.debug("Retrieving units from database ...");
+        Page<UnitModel> unitModelPage = unitDaoService.findAllBy(unitSpecification, pageable);
+        log.info("Retrieved units from database : {}", unitModelPage);
+        log.debug("Will map units to items resources ...");
+        Page<UnitItemGetResource> unitItemGetResourcePage = unitModelPage.map(unitMapper::modelToItemGetResource);
+        log.info("Unit item resources after mapping : {}", unitItemGetResourcePage);
+        for (UnitItemGetResource unitItemGetResource : unitItemGetResourcePage.getContent()) {
+            if (unitItemGetResource.getNature().equals(UnitNatureEnum.MULTI_UNIT)) {
+                log.debug("Unit item resource: {} is of type MULTI_UNIT, will retrieve its subUnits from database if any ...", unitItemGetResource);
+                Specification<UnitModel> subUnitSpecification = Specification.where(
+                        UnitSpecification.withNature(UnitNatureEnum.SINGLE)).and(
+                        UnitSpecification.withParentUnitId(unitItemGetResource.getId())
+                );
+                Page<UnitModel> subUnits = unitDaoService.findAllBy(subUnitSpecification, Pageable.unpaged());
+                if (subUnits.isEmpty()) {
+                    log.info("No sub-units found from database");
+                } else {
+                    log.info("Retrieved sub-units from database: {}", subUnits);
+                    log.debug("Will map sub-units to items resources and enrich multi-unit resources...");
+                    unitItemGetResource.setSubUnits(subUnits.map(unitMapper::modelToItemGetResource).getContent());
+                    log.info("Multi-unit item resource after adding sub-units is: {}", unitItemGetResource);
+                }
+            }
+        }
+        return ResponseEntity.ok(unitItemGetResourcePage);
     }
 
 
@@ -118,12 +147,12 @@ public class UnitServiceImpl implements UnitService {
             throw new IllegalArgumentException("Subunit not found");
         }
 
-        if (subUnit.getParentUnit() == null) {
+        if (subUnit.getParent() == null) {
             log.warn("Subunit [{}] is already detached", subUnitId);
             return;
         }
 
-        subUnit.setParentUnit(null);
+        subUnit.setParent(null);
         unitDaoService.save(subUnit);
     }
 
@@ -136,7 +165,7 @@ public class UnitServiceImpl implements UnitService {
         if (!isSearchEmpty) {
             Specification<UnitModel> searchSpec = Specification
                     .where(UnitSpecification.withNameLike(search))
-                    .or(UnitSpecification.withSubtitleLike(search));
+                    .or(UnitSpecification.withSubTitleLike(search));
 
             spec = spec.and(searchSpec);
         }
@@ -172,7 +201,7 @@ public class UnitServiceImpl implements UnitService {
             log.debug("Creating new sub-unit: {}", subUnit.getName());
         }
 
-        childUnit.setParentUnit(parentUnit);
+        childUnit.setParent(parentUnit);
         childUnit.setPriority(subUnit.getPriority() != null ? subUnit.getPriority() : 1);
         unitDaoService.save(childUnit);
     }

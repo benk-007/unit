@@ -16,7 +16,6 @@ import com.smsmode.unit.resource.unit.details.UnitDetailsPatchResource;
 import com.smsmode.unit.resource.unit.infos.UnitInfosGetResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * TODO: add your documentation
@@ -31,37 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class UnitMapper {
 
-    @Mapping(source = "nature", target = "nature")
-    public abstract UnitModel postResourceToModel(UnitPostResource unitPostResource);
-
-    @Mapping(source = "nature", target = "nature")
-    @Mapping(source = "parentUnit.id", target = "parentUnit")
-    @Mapping(source = "priority", target = "priority")
     public abstract UnitItemGetResource modelToItemGetResource(UnitModel unitModel);
-
-    protected com.smsmode.unit.dao.service.UnitDaoService unitDaoService;
-
-    @Autowired
-    public void setUnitDaoService(com.smsmode.unit.dao.service.UnitDaoService unitDaoService) {
-        this.unitDaoService = unitDaoService;
-    }
-
 
     @AfterMapping
     public void afterModelToItemGetResource(UnitModel unitModel, @MappingTarget UnitItemGetResource unitItemGetResource) {
         unitItemGetResource.setAudit(this.modelToAuditResource(unitModel));
-
-        if (unitModel.getNature() == com.smsmode.unit.enumeration.UnitNatureEnum.MULTI_UNIT) {
-            var subUnits = unitDaoService.findByParentUnit(unitModel);
-            var subUnitResources = subUnits.stream()
-                    .map(this::modelToItemGetResource)
-                    .toList();
-            unitItemGetResource.setSubUnits(subUnitResources);
-        }
     }
 
-    @Mapping(source = "parentUnit.id", target = "parentUnit")
-    @Mapping(source = "nature", target = "nature")
     public abstract UnitGetResource modelToGetResource(UnitModel unitModel);
 
     @AfterMapping
@@ -69,13 +44,13 @@ public abstract class UnitMapper {
         unitGetResource.setAudit(this.modelToAuditResource(unitModel));
     }
 
+    public abstract UnitModel postResourceToModel(UnitPostResource unitPostResource);
+
+
     public abstract AuditGetResource modelToAuditResource(AbstractBaseModel baseModel);
 
     public abstract UnitModel infosPatchResourceToModel(UnitInfosPatchResource unitInfosPatchResource, @MappingTarget UnitModel unit);
 
-    @Mapping(source = "parentUnit.id", target = "parentUnit")
-    @Mapping(source="nature", target= "nature")
-    @Mapping(source = "priority", target = "priority")
     public abstract UnitInfosGetResource modelToInfosGetResource(UnitModel unit);
 
     @AfterMapping

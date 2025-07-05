@@ -20,11 +20,11 @@ import lombok.Data;
 public class UnitGetResource {
     private String id;
     private String name;
-    private String subtitle;
+    private String subTitle;
     private AuditGetResource audit;
     private ContactEmbeddable contact;
     private AddressEmbeddable address;
     private boolean readiness;
-    private String parentUnit;
+    private ParentUnitGetResource parent;
     private UnitNatureEnum nature;
 }

@@ -31,7 +31,7 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
     public void populateUnits() {
         UnitModel apptOasis = new UnitModel();
         apptOasis.setName("Appartement");
-        apptOasis.setSubtitle("Appartement de rêve pour un séjour inoubliable");
+        apptOasis.setSubTitle("Appartement de rêve pour un séjour inoubliable");
         ContactEmbeddable oasisContact = new ContactEmbeddable();
         oasisContact.setMobile("+212623847854");
         AddressEmbeddable oasisAddress = new AddressEmbeddable();
@@ -44,7 +44,7 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
 
         UnitModel apptBelvedere = new UnitModel();
         apptBelvedere.setName("Appartement en résidence - Belevedere");
-        apptBelvedere.setSubtitle("Magnifique appartement Art déco");
+        apptBelvedere.setSubTitle("Magnifique appartement Art déco");
         ContactEmbeddable belevedereContact = new ContactEmbeddable();
         belevedereContact.setMobile("+212637889900");
         AddressEmbeddable belvedereAddress = new AddressEmbeddable();
@@ -57,7 +57,7 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
 
         UnitModel apptMaarif = new UnitModel();
         apptMaarif.setName("Studio Maârif");
-        apptMaarif.setSubtitle("Studio moderne en plein centre de Casa");
+        apptMaarif.setSubTitle("Studio moderne en plein centre de Casa");
         ContactEmbeddable maarifContact = new ContactEmbeddable();
         maarifContact.setMobile("+212618348502");
         AddressEmbeddable maarifAddress = new AddressEmbeddable();

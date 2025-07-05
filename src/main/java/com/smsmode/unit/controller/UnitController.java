@@ -25,13 +25,17 @@ import org.springframework.web.bind.annotation.*;
 public interface UnitController {
 
     @GetMapping
-    ResponseEntity<Page<UnitItemGetResource>> getAllUnits(@RequestParam(value = "search", required = false) String search, @RequestParam(value="nature", required=false) UnitNatureEnum nature, @RequestParam(value="withParent", required = false) Boolean withParent, Pageable pageable);
+    ResponseEntity<Page<UnitItemGetResource>> getAllUnits(
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "nature", required = false) UnitNatureEnum nature,
+            @RequestParam(value = "withParent", required = false) Boolean withParent,
+            Pageable pageable);
 
     @GetMapping("/{unitId}")
     ResponseEntity<UnitGetResource> getUnitById(@PathVariable("unitId") String unitId);
 
     @PostMapping
-    ResponseEntity<UnitItemGetResource> postUnit(@RequestBody @Valid UnitPostResource unitPostResource);
+    ResponseEntity<UnitGetResource> postUnit(@RequestBody @Valid UnitPostResource unitPostResource);
 
     @PostMapping("/{unitId}/sub-units")
     ResponseEntity<UnitItemGetResource> addSubUnitToMultiUnit(
