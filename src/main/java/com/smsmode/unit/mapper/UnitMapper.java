@@ -16,6 +16,7 @@ import com.smsmode.unit.resource.unit.details.UnitDetailsPatchResource;
 import com.smsmode.unit.resource.unit.infos.UnitInfosGetResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
+import org.springframework.util.ObjectUtils;
 
 /**
  * TODO: add your documentation
@@ -35,6 +36,10 @@ public abstract class UnitMapper {
     @AfterMapping
     public void afterModelToItemGetResource(UnitModel unitModel, @MappingTarget UnitItemGetResource unitItemGetResource) {
         unitItemGetResource.setAudit(this.modelToAuditResource(unitModel));
+        if (!ObjectUtils.isEmpty(unitItemGetResource.getParent())) {
+            unitItemGetResource.setAddress(unitModel.getParent().getAddress());
+            unitItemGetResource.setContact(unitModel.getParent().getContact());
+        }
     }
 
     public abstract UnitGetResource modelToGetResource(UnitModel unitModel);
@@ -42,6 +47,10 @@ public abstract class UnitMapper {
     @AfterMapping
     public void afterModelToGetResource(UnitModel unitModel, @MappingTarget UnitGetResource unitGetResource) {
         unitGetResource.setAudit(this.modelToAuditResource(unitModel));
+        if (!ObjectUtils.isEmpty(unitGetResource.getParent())) {
+            unitGetResource.setAddress(unitModel.getParent().getAddress());
+            unitGetResource.setContact(unitModel.getParent().getContact());
+        }
     }
 
     public abstract UnitModel postResourceToModel(UnitPostResource unitPostResource);
