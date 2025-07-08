@@ -52,10 +52,10 @@ public class PricingServiceImpl implements PricingService {
     private final RatesTableDaoService ratesTableDaoService;
 
     @Override
-    public Page<CalendarPriceGetResource> retrieveCalendarPrices(LocalDate checkinDate, LocalDate checkoutDate,
+    public Page<CalendarPriceGetResource> retrieveCalendarPrices(LocalDate startDate, LocalDate endDate,
                                                                  Pageable pageable) {
-        log.debug("Retrieve list of dates from: {} to {} ...", DateUtils.format(checkinDate), DateUtils.format(checkoutDate));
-        List<LocalDate> dates = DateUtils.getDatesBetweenInclusive(checkinDate, checkoutDate);
+        log.debug("Retrieve list of dates from: {} to {} ...", DateUtils.format(startDate), DateUtils.format(endDate));
+        List<LocalDate> dates = DateUtils.getDatesBetweenInclusive(startDate, endDate);
         log.info("List of dates is: {}", dates.stream().map(DateUtils::format).collect(Collectors.joining(",")));
         log.debug("Constructing unit specification with readiness true and nature is SINGLE ...");
         Specification<UnitModel> unitSpecification = Specification.where(UnitSpecification.withReadiness(true)
@@ -73,7 +73,7 @@ public class PricingServiceImpl implements PricingService {
         groupedByParent.forEach((parentUnitId, subUnits) -> {
             if (!parentUnitId.isBlank()) {
                 log.debug("ParentUnitId is not empty, will retrieve pricing for multi unit ...");
-                Map<LocalDate, PricingGetResource> pricesPerDay = this.calculateCalendarPricesByUnit(subUnits.getFirst().getParent(), checkinDate, checkinDate, dates);
+                Map<LocalDate, PricingGetResource> pricesPerDay = this.calculateCalendarPricesByUnit(subUnits.getFirst().getParent(), startDate, startDate, dates);
                 log.info("Prices per day are: {}", pricesPerDay);
                 for (UnitModel unit : subUnits) {
                     pricesByUnit.put(unit.getId(), pricesPerDay);
@@ -81,7 +81,7 @@ public class PricingServiceImpl implements PricingService {
             } else {
                 log.debug("ParentUnitId is null, will retrieve pricing for each unit ...");
                 for (UnitModel unit : subUnits) {
-                    pricesByUnit.put(unit.getId(), this.calculateCalendarPricesByUnit(unit, checkinDate, checkoutDate, dates));
+                    pricesByUnit.put(unit.getId(), this.calculateCalendarPricesByUnit(unit, startDate, endDate, dates));
                 }
             }
         });

@@ -5,7 +5,6 @@
 package com.smsmode.unit.controller;
 
 import com.smsmode.unit.resource.calendar.CalendarPriceGetResource;
-import com.smsmode.unit.resource.pricing.PricingGetResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * TODO: add your documentation
@@ -25,7 +23,7 @@ import java.util.List;
 public interface PricingController {
 
     @GetMapping("/calendar")
-    Page<CalendarPriceGetResource> getCalendarPricing(@RequestParam("checkinDate") LocalDate checkinDate,
-                                                      @RequestParam("checkoutDate") LocalDate checkoutDate,
+    Page<CalendarPriceGetResource> getCalendarPricing(@RequestParam("startDate") LocalDate startDate,
+                                                      @RequestParam("endDate") LocalDate endDate,
                                                       Pageable pageable);
 }

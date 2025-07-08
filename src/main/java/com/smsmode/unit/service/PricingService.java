@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface PricingService {
 
-    Page<CalendarPriceGetResource> retrieveCalendarPrices(LocalDate checkinDate, LocalDate checkoutDate, Pageable pageable);
+    Page<CalendarPriceGetResource> retrieveCalendarPrices(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     List<PricingGetResource> retrievePricingByUnit(String unitId, LocalDate checkinDate, LocalDate checkoutDate, int guests);
 

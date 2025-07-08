@@ -28,7 +28,7 @@ public class PricingControllerImpl implements PricingController {
 
 
     @Override
-    public Page<CalendarPriceGetResource> getCalendarPricing(LocalDate checkinDate, LocalDate checkoutDate, Pageable pageable) {
-        return pricingService.retrieveCalendarPrices(checkinDate, checkoutDate, pageable);
+    public Page<CalendarPriceGetResource> getCalendarPricing(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        return pricingService.retrieveCalendarPrices(startDate, endDate, pageable);
     }
 }
