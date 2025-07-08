@@ -4,15 +4,22 @@
  */
 package com.smsmode.unit.service.impl;
 
+import com.smsmode.unit.dao.service.RatesTableDaoService;
 import com.smsmode.unit.dao.service.UnitDaoService;
-import com.smsmode.unit.embeddable.AddressEmbeddable;
-import com.smsmode.unit.embeddable.ContactEmbeddable;
+import com.smsmode.unit.embeddable.*;
+import com.smsmode.unit.model.RatesTableModel;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.service.DataLoaderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * TODO: add your documentation
@@ -26,6 +33,7 @@ import org.springframework.stereotype.Service;
 public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunner {
 
     private final UnitDaoService unitDaoService;
+    private final RatesTableDaoService ratesTableDaoService;
 
     @Override
     public void populateUnits() {
@@ -41,6 +49,7 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
         oasisAddress.setStreet2("Imm Luxe Oasis, Appt N°31");
         apptOasis.setAddress(oasisAddress);
         apptOasis.setContact(oasisContact);
+        apptOasis.setReadiness(true);
 
         UnitModel apptBelvedere = new UnitModel();
         apptBelvedere.setName("Appartement en résidence - Belevedere");
@@ -54,6 +63,7 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
         belvedereAddress.setStreet2("Résidence belle vue, Appt N°2");
         apptBelvedere.setAddress(belvedereAddress);
         apptBelvedere.setContact(belevedereContact);
+        apptBelvedere.setReadiness(true);
 
         UnitModel apptMaarif = new UnitModel();
         apptMaarif.setName("Studio Maârif");
@@ -67,10 +77,55 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
         maarifAddress.setStreet2("Coin vert, Appt N°21, 2ème étage");
         apptMaarif.setAddress(maarifAddress);
         apptMaarif.setContact(maarifContact);
+        apptMaarif.setReadiness(true);
 
-        unitDaoService.save(apptOasis);
-        unitDaoService.save(apptBelvedere);
-        unitDaoService.save(apptMaarif);
+        apptOasis = unitDaoService.save(apptOasis);
+        apptBelvedere = unitDaoService.save(apptBelvedere);
+        apptMaarif = unitDaoService.save(apptMaarif);
+        populateDefaultRate(apptOasis);
+        populateDefaultRate(apptBelvedere);
+        populateDefaultRate(apptMaarif);
+
+        populateRatesTable(apptOasis);
+    }
+
+    @Override
+    public void populateDefaultRate(UnitModel unitModel) {
+        RateEmbeddable rate = new RateEmbeddable();
+        BasePricingEmbeddable basePricing = new BasePricingEmbeddable();
+        basePricing.setNightly(BigDecimal.valueOf(250));
+        basePricing.setWeekendNight(BigDecimal.valueOf(300));
+        basePricing.setWeekly(BigDecimal.valueOf(1700));
+        basePricing.setMonthly(BigDecimal.valueOf(7000));
+        basePricing.setMinStay(1);
+        basePricing.setMaxStay(31);
+        rate.setBasePricing(basePricing);
+        unitModel.setDefaultRate(rate);
+        unitDaoService.save(unitModel);
+    }
+
+    @Override
+    public void populateRatesTable(UnitModel unitModel) {
+        RatesTableModel ratesTableModel = new RatesTableModel();
+        ratesTableModel.setName("Aid rates");
+        ratesTableModel.setStartDate(LocalDate.now());
+        ratesTableModel.setEndDate(LocalDate.now().plusDays(10));
+        ratesTableModel.setUnit(unitModel);
+        RateEmbeddable rate = new RateEmbeddable();
+        BasePricingEmbeddable basePricing = new BasePricingEmbeddable();
+        basePricing.setNightly(BigDecimal.valueOf(400));
+        basePricing.setWeekendNight(BigDecimal.valueOf(450));
+        basePricing.setMinStay(1);
+        rate.setBasePricing(basePricing);
+        ratesTableModel.setRate(rate);
+
+        Set<DaySpecificPricingEmbeddable> daySpecificPricings = new HashSet<DaySpecificPricingEmbeddable>();
+        daySpecificPricings.add(new DaySpecificPricingEmbeddable(Set.of(DayOfWeek.THURSDAY), BigDecimal.valueOf(500), null, null));
+        daySpecificPricings.add(new DaySpecificPricingEmbeddable(Set.of(DayOfWeek.THURSDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY), BigDecimal.valueOf(550), null, null));
+
+        ratesTableModel.setDaySpecificPrices(daySpecificPricings);
+
+        ratesTableDaoService.save(ratesTableModel);
     }
 
     @Override

@@ -2,21 +2,20 @@
  * <p>Copyright (C) Calade Technologies, Inc - All Rights Reserved Unauthorized copying of this
  * file, via any medium is strictly prohibited Proprietary and confidential
  */
-package com.smsmode.unit.service;
+package com.smsmode.unit.resource.unit.get;
 
-import com.smsmode.unit.model.UnitModel;
+import lombok.Data;
 
 /**
  * TODO: add your documentation
  *
  * @author hamzahabchi (contact: hamza.habchi@messaging-technologies.com)
- * <p>Created 31 May 2025</p>
+ * <p>Created 08 Jul 2025</p>
  */
-public interface DataLoaderService {
-
-    void populateUnits();
-
-    void populateDefaultRate(UnitModel unitModel);
-
-    void populateRatesTable(UnitModel unitModel);
+@Data
+public class UnitRefGetResource {
+    private String id;
+    private String name;
+    private String subTitle;
+    private boolean readiness;
 }

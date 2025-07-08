@@ -93,7 +93,7 @@ public class UnitServiceImpl implements UnitService {
         }
         log.debug("Retrieving units from database ...");
         Page<UnitModel> unitModelPage = unitDaoService.findAllBy(unitSpecification, pageable);
-        log.info("Retrieved units from database : {}", unitModelPage);
+        log.info("Retrieved {} units from database", unitModelPage.getTotalPages());
         log.debug("Will map units to items resources ...");
         Page<UnitItemGetResource> unitItemGetResourcePage = unitModelPage.map(unitMapper::modelToItemGetResource);
         log.info("Unit item resources after mapping : {}", unitItemGetResourcePage);

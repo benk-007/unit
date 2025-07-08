@@ -1,7 +1,6 @@
 package com.smsmode.unit.dao.specification;
 
 import com.smsmode.unit.enumeration.UnitNatureEnum;
-import com.smsmode.unit.model.ImageModel_;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.model.UnitModel_;
 import jakarta.persistence.criteria.Join;
@@ -57,13 +56,18 @@ public class UnitSpecification {
     }
 
     public static Specification<UnitModel> withParentUnitId(String parentId) {
-        return (root, query, criteriaBuilder) ->{
-            if(ObjectUtils.isEmpty(parentId)){
+        return (root, query, criteriaBuilder) -> {
+            if (ObjectUtils.isEmpty(parentId)) {
                 return criteriaBuilder.conjunction();
-            }else{
+            } else {
                 Join<UnitModel, UnitModel> unitJoin = root.join(UnitModel_.parent);
                 return criteriaBuilder.equal(unitJoin.get(UnitModel_.id), parentId);
             }
         };
+    }
+
+    public static Specification<UnitModel> withReadiness(boolean readiness) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(UnitModel_.readiness), readiness);
     }
 }

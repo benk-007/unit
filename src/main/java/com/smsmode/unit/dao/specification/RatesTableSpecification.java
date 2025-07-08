@@ -4,6 +4,8 @@
  */
 package com.smsmode.unit.dao.specification;
 
+import com.smsmode.unit.embeddable.BasePricingEmbeddable_;
+import com.smsmode.unit.embeddable.RateEmbeddable_;
 import com.smsmode.unit.model.RatesTableModel;
 import com.smsmode.unit.model.RatesTableModel_;
 import com.smsmode.unit.model.UnitModel;
@@ -11,6 +13,8 @@ import com.smsmode.unit.model.UnitModel_;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.ObjectUtils;
+
+import java.time.LocalDate;
 
 public class RatesTableSpecification {
 
@@ -40,53 +44,21 @@ public class RatesTableSpecification {
                 criteriaBuilder.equal(root.get(RatesTableModel_.id), ratesTableId);
     }
 
-    /*private RatesTableSpecification() {
-    }
-    public static Specification<RatesTableModel> withIdEqual(String rateId) {
-        if (!StringUtils.hasText(rateId)) {
-            return null;
-        }
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get(RateModel_.id), rateId);
-    }
-    public static Specification<RatesTableModel> withRateNameContaining(String rateName) {
-        if (!StringUtils.hasText(rateName)) {
-            return null;
-        }
-        return (root, query, criteriaBuilder) ->
-                criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get(RateModel_.rateName)),
-                        "%" + rateName.toLowerCase() + "%"
-                );
-    }
-    *//**
-     * Creates a specification to filter rate tables by unit ID.
-     * Filters rates that are associated with the specified unit.
-     *//*
-    public static Specification<RatesTableModel> withUnitIdEqual(String unitId) {
-        if (!StringUtils.hasText(unitId)) {
-            return null;
-        }
-        return (root, query, criteriaBuilder) -> {
-            Join<RatesTableModel, UnitModel> unitsJoin = root.join(RateModel_.units);
-            return criteriaBuilder.equal(unitsJoin.get(UnitModel_.id), unitId);
-        };
+    public static Specification<RatesTableModel> withMinStayGreaterThanOrEqual(int numberOfNights) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .greaterThanOrEqualTo(root.get(RatesTableModel_.RATE).get(RateEmbeddable_.BASE_PRICING).get(BasePricingEmbeddable_.MIN_STAY),
+                        numberOfNights);
     }
 
-    *//**
-     * Creates a specification to search rates by associated unit name (case-insensitive partial match).
-     * Returns rates that are linked to units whose name contains the search term.
-     *//*
-    public static Specification<RatesTableModel> withUnitNameContaining(String unitName) {
-        if (!StringUtils.hasText(unitName)) {
-            return null;
-        }
-        return (root, query, criteriaBuilder) -> {
-            Join<RatesTableModel, UnitModel> unitsJoin = root.join(RateModel_.units);
-            return criteriaBuilder.like(
-                    criteriaBuilder.lower(unitsJoin.get(UnitModel_.name)),
-                    "%" + unitName.toLowerCase() + "%"
-            );
-        };
-    }*/
+    public static Specification<RatesTableModel> withStartsDateBeforeOrEqual(LocalDate endDate) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .lessThanOrEqualTo(root.get(RatesTableModel_.startDate), endDate);
+    }
+
+    public static Specification<RatesTableModel> withEndDateAfterOrEqual(LocalDate startDate) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder
+                .greaterThanOrEqualTo(root.get(RatesTableModel_.endDate), startDate);
+    }
+
+
 }

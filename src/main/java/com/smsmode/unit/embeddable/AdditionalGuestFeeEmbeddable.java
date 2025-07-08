@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Embeddable
@@ -14,7 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AdditionalGuestFeeEmbeddable {
     @Positive(message = "Fee per person per night must be positive")
-    private Integer feePpPn;
+    private BigDecimal feePpPn;
 
     @Positive(message = "Guest count must be positive")
     private Integer guestCount;
