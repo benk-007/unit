@@ -23,6 +23,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TODO: add your documentation
@@ -48,26 +50,47 @@ public class UnitServiceImpl implements UnitService {
         unitModel = unitDaoService.save(unitModel);
         log.info("Unit saved to database: {}", unitModel);
 
-        if (unitModel.getNature().equals(UnitNatureEnum.MULTI_UNIT) && !CollectionUtils.isEmpty(unitPostResource.getSubUnits())) {
-            log.debug("SubUnits passed to be created/attached to this multi-unit ...");
-            for (SubUnitResource subUnitResource : unitPostResource.getSubUnits()) {
-                log.debug("Subunit to save/attach: {}", subUnitResource);
-                UnitModel subUnit;
-                if (!ObjectUtils.isEmpty(subUnitResource.getUnitId())) {
-                    log.debug("Retrieve unit with Id: {} from database ...", subUnitResource.getUnitId());
-                    subUnit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(subUnitResource.getUnitId()));
-                    log.info("Attaching multi-unit to sub-unit: {} and set priority to 0 ...", subUnit);
-                    subUnit.setParent(unitModel);
-                    subUnit.setPriority(0);
-                    log.debug("Saving sub-unit to database ...");
-                } else {
-                    log.debug("Map sub-unit to model ...");
-                    subUnit = new UnitModel(subUnitResource.getName(), unitModel.getAddress(), unitModel.getContact(), subUnitResource.getReadiness(), subUnitResource.getPriority());
-                    subUnit.setParent(unitModel);
-                    log.debug("Sub-unit model after mapping is: {}", subUnit);
+        if (unitModel.getNature().equals(UnitNatureEnum.MULTI_UNIT)) {
+            if (!CollectionUtils.isEmpty(unitPostResource.getSubUnits())) {
+                log.debug("SubUnits passed to be created/attached to this multi-unit ...");
+                for (SubUnitResource subUnitResource : unitPostResource.getSubUnits()) {
+                    log.debug("Subunit to save/attach: {}", subUnitResource);
+                    UnitModel subUnit;
+                    if (!ObjectUtils.isEmpty(subUnitResource.getUnitId())) {
+                        log.debug("Retrieve unit with Id: {} from database ...", subUnitResource.getUnitId());
+                        subUnit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(subUnitResource.getUnitId()));
+                        log.info("Attaching multi-unit to sub-unit: {} and set priority to 0 ...", subUnit);
+                        subUnit.setParent(unitModel);
+                        subUnit.setPriority(0);
+                        log.debug("Saving sub-unit to database ...");
+                    } else {
+                        log.debug("Map sub-unit to model ...");
+                        subUnit = new UnitModel(subUnitResource.getName(), unitModel.getAddress(), unitModel.getContact(), subUnitResource.getReadiness(), subUnitResource.getPriority());
+                        subUnit.setParent(unitModel);
+                        log.debug("Sub-unit model after mapping is: {}", subUnit);
+                    }
+                    subUnit = unitDaoService.save(subUnit);
+                    log.info("Sub-unit saved to database: {}", subUnit);
                 }
-                subUnit = unitDaoService.save(subUnit);
-                log.info("Sub-unit saved to database: {}", subUnit);
+            } else if (!ObjectUtils.isEmpty(unitPostResource.getQuantity())) {
+                log.debug("Quantity passed for bulk creation ...");
+                String prefix;
+                List<UnitModel> subUnits = new ArrayList<>();
+                if (ObjectUtils.isEmpty(unitPostResource.getSubUnitPrefix())) {
+                    log.debug("No subUnit prefix defined, will use Sub Unit as a fallback ...");
+                    prefix = "Sub Unit ";
+                } else {
+                    prefix = unitPostResource.getSubUnitPrefix();
+                }
+                log.debug("Will loop over quantity to create as many subUnits ...");
+                for (int i = 0; i < unitPostResource.getQuantity(); i++) {
+                    UnitModel subUnit = new UnitModel(prefix.concat(String.format("%03d", i + 1)), unitModel.getAddress(), unitModel.getContact(), false, i + 1);
+                    subUnit.setParent(unitModel);
+                    subUnits.add(subUnit);
+                }
+                log.debug("Constructed {} subUnits, that will be saved to database ...", subUnits);
+                unitDaoService.saveAll(subUnits);
+                log.info("{} Sub-unit saved to database", subUnits.size());
             }
         }
         return ResponseEntity.created(URI.create("")).body(unitMapper.modelToGetResource(unitModel));

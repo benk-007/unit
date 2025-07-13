@@ -4,22 +4,15 @@
  */
 package com.smsmode.unit.service.impl;
 
-import com.smsmode.unit.dao.service.RatesTableDaoService;
-import com.smsmode.unit.dao.service.UnitDaoService;
-import com.smsmode.unit.embeddable.*;
-import com.smsmode.unit.model.RatesTableModel;
-import com.smsmode.unit.model.UnitModel;
+import com.smsmode.unit.embeddable.AddressEmbeddable;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
+import com.smsmode.unit.resource.unit.UnitPostResource;
 import com.smsmode.unit.service.DataLoaderService;
+import com.smsmode.unit.service.UnitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * TODO: add your documentation
@@ -32,64 +25,44 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunner {
 
-    private final UnitDaoService unitDaoService;
-    private final RatesTableDaoService ratesTableDaoService;
+    private final UnitService unitService;
 
     @Override
     public void populateUnits() {
-        UnitModel apptOasis = new UnitModel();
-        apptOasis.setName("Appartement");
-        apptOasis.setSubTitle("Appartement de rêve pour un séjour inoubliable");
-        ContactEmbeddable oasisContact = new ContactEmbeddable();
-        oasisContact.setMobile("+212623847854");
-        AddressEmbeddable oasisAddress = new AddressEmbeddable();
-        oasisAddress.setCity("Casablanca");
-        oasisAddress.setCountry("MA");
-        oasisAddress.setStreet1("5 rue maréchal george");
-        oasisAddress.setStreet2("Imm Luxe Oasis, Appt N°31");
-        apptOasis.setAddress(oasisAddress);
-        apptOasis.setContact(oasisContact);
-        apptOasis.setReadiness(true);
+        AddressEmbeddable address = new AddressEmbeddable();
+        address.setCity("Marrakech");
+        address.setCountry("MA");
+        address.setStreet1("Angle Avenue Mohammed VI, et Avenue Hassan II");
+        address.setPostCode("40000");
 
-        UnitModel apptBelvedere = new UnitModel();
-        apptBelvedere.setName("Appartement en résidence - Belevedere");
-        apptBelvedere.setSubTitle("Magnifique appartement Art déco");
-        ContactEmbeddable belevedereContact = new ContactEmbeddable();
-        belevedereContact.setMobile("+212637889900");
-        AddressEmbeddable belvedereAddress = new AddressEmbeddable();
-        belvedereAddress.setCity("Casablanca");
-        belvedereAddress.setCountry("MA");
-        belvedereAddress.setStreet1("Rue des consulats");
-        belvedereAddress.setStreet2("Résidence belle vue, Appt N°2");
-        apptBelvedere.setAddress(belvedereAddress);
-        apptBelvedere.setContact(belevedereContact);
-        apptBelvedere.setReadiness(true);
+        UnitPostResource doubleVuePiscine = new UnitPostResource();
+        doubleVuePiscine.setName("Chambre Double Vue Piscine");
+        doubleVuePiscine.setNature(UnitNatureEnum.MULTI_UNIT);
+        doubleVuePiscine.setQuantity(40);
+        doubleVuePiscine.setSubUnitPrefix("DVP");
+        doubleVuePiscine.setAddress(address);
 
-        UnitModel apptMaarif = new UnitModel();
-        apptMaarif.setName("Studio Maârif");
-        apptMaarif.setSubTitle("Studio moderne en plein centre de Casa");
-        ContactEmbeddable maarifContact = new ContactEmbeddable();
-        maarifContact.setMobile("+212618348502");
-        AddressEmbeddable maarifAddress = new AddressEmbeddable();
-        maarifAddress.setCity("Casablanca");
-        maarifAddress.setCountry("MA");
-        maarifAddress.setStreet1("21 avenue karim el bahar");
-        maarifAddress.setStreet2("Coin vert, Appt N°21, 2ème étage");
-        apptMaarif.setAddress(maarifAddress);
-        apptMaarif.setContact(maarifContact);
-        apptMaarif.setReadiness(true);
+        UnitPostResource doubleVueGare = new UnitPostResource();
+        doubleVueGare.setName("Chambre Double Vue Gare");
+        doubleVueGare.setNature(UnitNatureEnum.MULTI_UNIT);
+        doubleVueGare.setQuantity(30);
+        doubleVueGare.setSubUnitPrefix("DVG");
+        doubleVueGare.setAddress(address);
 
-        apptOasis = unitDaoService.save(apptOasis);
-        apptBelvedere = unitDaoService.save(apptBelvedere);
-        apptMaarif = unitDaoService.save(apptMaarif);
-        populateDefaultRate(apptOasis);
-        populateDefaultRate(apptBelvedere);
-        populateDefaultRate(apptMaarif);
+        UnitPostResource suite = new UnitPostResource();
+        suite.setName("Suite");
+        suite.setNature(UnitNatureEnum.MULTI_UNIT);
+        suite.setQuantity(7);
+        suite.setSubUnitPrefix("ST");
+        suite.setAddress(address);
 
-        populateRatesTable(apptOasis);
+        unitService.create(doubleVuePiscine);
+        unitService.create(doubleVueGare);
+        unitService.create(suite);
+
     }
 
-    @Override
+/*    @Override
     public void populateDefaultRate(UnitModel unitModel) {
         RateEmbeddable rate = new RateEmbeddable();
         BasePricingEmbeddable basePricing = new BasePricingEmbeddable();
@@ -126,7 +99,7 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
         ratesTableModel.setDaySpecificPrices(daySpecificPricings);
 
         ratesTableDaoService.save(ratesTableModel);
-    }
+    }*/
 
     @Override
     public void run(String... args) throws Exception {

@@ -10,6 +10,7 @@ import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.exception.ResourceNotFoundException;
 import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
 import com.smsmode.unit.model.UnitModel;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -73,6 +74,12 @@ public class UnitDaoServiceImpl implements UnitDaoService {
     @Override
     public void updateTypeByParentUnitId(String parentUnitId, UnitTypeEnum type) {
         unitRepository.updateTypeByParentUnitId(parentUnitId, type);
+    }
+
+    @Override
+    @Transactional
+    public void saveAll(List<UnitModel> subUnits) {
+        unitRepository.saveAll(subUnits);
     }
 
 

@@ -16,7 +16,7 @@ public interface DataLoaderService {
 
     void populateUnits();
 
-    void populateDefaultRate(UnitModel unitModel);
+/*    void populateDefaultRate(UnitModel unitModel);
 
-    void populateRatesTable(UnitModel unitModel);
+    void populateRatesTable(UnitModel unitModel);*/
 }

@@ -31,4 +31,6 @@ public interface UnitDaoService {
 
     void updateTypeByParentUnitId(String id, UnitTypeEnum type);
 
+    void saveAll(List<UnitModel> subUnits);
+
 }

@@ -26,5 +26,7 @@ public class UnitPostResource {
     private UnitNatureEnum nature = UnitNatureEnum.SINGLE;
     private AddressEmbeddable address;
     private ContactEmbeddable contact;
+    private Integer quantity;
+    private String subUnitPrefix;
     private List<SubUnitResource> subUnits;
 }
