@@ -17,6 +17,5 @@ import lombok.Data;
 public class ImageGetResource {
     private String id;
     private boolean cover;
-    private String fileName;
     private AuditGetResource audit;
 }
