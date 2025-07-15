@@ -24,7 +24,7 @@ public interface UnitImageService {
 
     ResponseEntity<Page<ImageGetResource>> retrieveImages(String unitId, Pageable pageable);
 
-    ResponseEntity<List<ImageGetResource>> createImage(String unitId, MultipartFile[] files);
+    ResponseEntity<Page<ImageGetResource>> createImage(String unitId, MultipartFile[] files);
 
     ResponseEntity<Void> removeById(String imageId);
 

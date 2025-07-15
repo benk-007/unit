@@ -27,6 +27,8 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +66,7 @@ public class UnitImageServiceImpl implements UnitImageService {
     }
 
     @Override
-    public ResponseEntity<List<ImageGetResource>> createImage(String unitId, MultipartFile[] files) {
+    public ResponseEntity<Page<ImageGetResource>> createImage(String unitId, MultipartFile[] files) {
 
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
 
@@ -76,8 +78,9 @@ public class UnitImageServiceImpl implements UnitImageService {
 
         String filePath = "units/" + unitId + "/images";
         ResponseEntity<List<MediaGetResource>> mediaResponse = mediaFeignService.uploadMedia(filePath, files);
+        List<MediaGetResource> mediaList = mediaResponse.getBody();
 
-        if (mediaResponse.getBody() == null || mediaResponse.getBody().isEmpty()) {
+        if (mediaList == null || mediaList.isEmpty()) {
             throw new InternalServerException(
                     InternalServerExceptionTitleEnum.FILE_UPLOAD,
                     "Media upload failed or returned no files.");
@@ -101,7 +104,12 @@ public class UnitImageServiceImpl implements UnitImageService {
             savedImages.add(imageMapper.modelToImageGetResource(image));
         }
 
-        return ResponseEntity.created(URI.create("")).body(savedImages);
+        Page<ImageGetResource> page = new PageImpl<>(
+                savedImages,
+                PageRequest.of(0, savedImages.size()),
+                savedImages.size()
+        );
+        return ResponseEntity.created(URI.create("")).body(page);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class ImageControllerImpl implements ImageController {
     }
 
     @Override
-    public ResponseEntity<List<ImageGetResource>> postImageByUnitId(String unitId, MultipartFile[] files) {
+    public ResponseEntity<Page<ImageGetResource>> postImageByUnitId(String unitId, MultipartFile[] files) {
         return unitImageService.createImage(unitId, files);
     }
 
