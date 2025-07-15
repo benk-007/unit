@@ -18,4 +18,5 @@ public class ImageGetResource {
     private String id;
     private boolean cover;
     private AuditGetResource audit;
+    private String uuid;
 }
