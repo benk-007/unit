@@ -118,9 +118,13 @@ public class UnitImageServiceImpl implements UnitImageService {
 
         if (imagePatchResource.isCover()) {
             UnitModel unit = image.getUnit();
-            ImageModel existingCover = imageDaoService.findOneBy(
-                    ImageSpecification.withCover(true).and(ImageSpecification.withUnit(unit))
-            );
+            ImageModel existingCover = null;
+            try {
+                existingCover = imageDaoService.findOneBy(
+                        ImageSpecification.withCover(true).and(ImageSpecification.withUnit(unit))
+                );
+            } catch (ResourceNotFoundException ignored) {
+            }
 
             if (existingCover != null && !existingCover.getId().equals(image.getId())) {
                 existingCover.setCover(false);
