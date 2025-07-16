@@ -66,7 +66,7 @@ public class UnitImageServiceImpl implements UnitImageService {
     }
 
     @Override
-    public ResponseEntity<Page<ImageGetResource>> createImage(String unitId, MultipartFile[] files) {
+    public ResponseEntity<List<ImageGetResource>> createImage(String unitId, MultipartFile[] files) {
 
         UnitModel unit = unitDaoService.findOneBy(UnitSpecification.withIdEqual(unitId));
 
@@ -98,18 +98,14 @@ public class UnitImageServiceImpl implements UnitImageService {
 
             MediaRefEmbeddable mediaRef = new MediaRefEmbeddable();
             mediaRef.setUuid(media.getId());
-            image.setUuid(mediaRef);
+            image.setMedia(mediaRef);
 
             image = imageDaoService.save(image);
             savedImages.add(imageMapper.modelToImageGetResource(image));
         }
 
-        Page<ImageGetResource> page = new PageImpl<>(
-                savedImages,
-                PageRequest.of(0, savedImages.size()),
-                savedImages.size()
-        );
-        return ResponseEntity.created(URI.create("")).body(page);
+
+        return ResponseEntity.created(URI.create("")).body(savedImages);
     }
 
     @Override
@@ -143,7 +139,7 @@ public class UnitImageServiceImpl implements UnitImageService {
     public ResponseEntity<Void> removeById(String imageId) {
         if (imageDaoService.existsBy(ImageSpecification.withId(imageId))) {
             ImageModel image = imageDaoService.findOneBy(ImageSpecification.withId(imageId));
-            String mediaId = image.getUuid().getUuid();
+            String mediaId = image.getMedia().getUuid();
             try {
                 mediaFeignService.deleteMediaById(mediaId);
             } catch (Exception e) {

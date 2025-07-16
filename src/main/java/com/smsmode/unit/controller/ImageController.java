@@ -27,7 +27,7 @@ public interface ImageController {
     ResponseEntity<Page<ImageGetResource>> getImageByUnitId(@RequestParam("unitId") String unitId, Pageable pageable);
 
     @PostMapping
-    ResponseEntity<Page<ImageGetResource>> postImageByUnitId(@RequestParam("unitId") String unitId, @RequestParam("files") MultipartFile[] files);
+    ResponseEntity<List<ImageGetResource>> postImageByUnitId(@RequestParam("unitId") String unitId, @RequestParam("files") MultipartFile[] files);
 
     @PatchMapping("/{imageId}")
     ResponseEntity<ImageGetResource> patchImageById(@PathVariable String imageId, @RequestBody ImagePatchResource imagePatchResource);

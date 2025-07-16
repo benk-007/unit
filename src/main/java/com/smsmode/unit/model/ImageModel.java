@@ -30,5 +30,5 @@ public class ImageModel extends AbstractBaseModel {
     private UnitModel unit;
 
     @Embedded
-    private MediaRefEmbeddable uuid;
+    private MediaRefEmbeddable media;
 }
