@@ -12,5 +12,4 @@ server:
 
 file:
   upload:
-    root: ${user.home}/Projects/xStay/upload-folder
-    unit-image: ${file.upload.root}/units/:unitId/images
+    unit-image: units/:unitId/images

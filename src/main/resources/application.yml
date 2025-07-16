@@ -11,6 +11,13 @@ spring:
       enabled: false
     livereload:
       enabled: false
+  # ===================================================================
+  # Multipart configuration
+  # ===================================================================
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 12MB
   # ==================================================================
   # Jackson configuration
   # ==================================================================
@@ -21,11 +28,6 @@ spring:
   # ===================================================================
   # Datasource configuration
   # ===================================================================
-  datasource:
-    url: jdbc:postgresql://localhost:5432/db-unit
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: mysecretpassword
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -71,5 +73,3 @@ management:
       show-details: always
       probes:
         enabled: true
-
-

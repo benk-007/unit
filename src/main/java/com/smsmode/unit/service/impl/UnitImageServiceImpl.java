@@ -23,22 +23,13 @@ import com.smsmode.unit.service.UnitImageService;
 import com.smsmode.unit.service.feign.MediaFeignService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +50,9 @@ public class UnitImageServiceImpl implements UnitImageService {
     private final ImageMapper imageMapper;
     private final MediaFeignService mediaFeignService;
 
+    @Value("${file.upload.unit-image}")
+    public String unitImagePath;
+
     @Override
     public ResponseEntity<Page<ImageGetResource>> retrieveImages(String unitId, Pageable pageable) {
         Page<ImageModel> imageModels = imageDaoService.findAllBy(ImageSpecification.withUnitIdEqual(unitId), pageable);
@@ -76,7 +70,7 @@ public class UnitImageServiceImpl implements UnitImageService {
                     "No image files were provided.");
         }
 
-        String filePath = "units/" + unitId + "/images";
+        String filePath = unitImagePath.replace(":unitId", unitId);
         ResponseEntity<List<MediaGetResource>> mediaResponse = mediaFeignService.uploadMedia(filePath, files);
         List<MediaGetResource> mediaList = mediaResponse.getBody();
 
@@ -89,8 +83,8 @@ public class UnitImageServiceImpl implements UnitImageService {
         boolean hasCover = imageDaoService.existsBy(ImageSpecification.withUnitIdEqual(unitId));
         List<ImageGetResource> savedImages = new ArrayList<>();
 
-        for (int i = 0; i < mediaResponse.getBody().size(); i++) {
-            MediaGetResource media = mediaResponse.getBody().get(i);
+        for (int i = 0; i < mediaList.size(); i++) {
+            MediaGetResource media = mediaList.get(i);
 
             ImageModel image = new ImageModel();
             image.setUnit(unit);
