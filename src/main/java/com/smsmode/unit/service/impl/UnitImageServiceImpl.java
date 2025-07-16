@@ -115,12 +115,22 @@ public class UnitImageServiceImpl implements UnitImageService {
     @Override
     public ResponseEntity<ImageGetResource> updateById(String imageId, ImagePatchResource imagePatchResource) {
         ImageModel image = imageDaoService.findOneBy(ImageSpecification.withId(imageId));
-        image.setCover(imagePatchResource.isCover());
-        if (imageDaoService.existsBy(ImageSpecification.withCover(true))) {
-            ImageModel coverImage = imageDaoService.findOneBy(ImageSpecification.withCover(true));
-            coverImage.setCover(false);
-            imageDaoService.save(coverImage);
+
+        if (imagePatchResource.isCover()) {
+            UnitModel unit = image.getUnit();
+            ImageModel existingCover = imageDaoService.findOneBy(
+                    ImageSpecification.withCover(true).and(ImageSpecification.withUnit(unit))
+            );
+
+            if (existingCover != null && !existingCover.getId().equals(image.getId())) {
+                existingCover.setCover(false);
+                imageDaoService.save(existingCover);
+            }
+            image.setCover(true);
+        } else {
+            image.setCover(false);
         }
+
         image = imageDaoService.save(image);
         return ResponseEntity.ok(imageMapper.modelToImageGetResource(image));
     }
