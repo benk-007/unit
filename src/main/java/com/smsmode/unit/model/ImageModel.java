@@ -4,11 +4,10 @@
  */
 package com.smsmode.unit.model;
 
+import com.smsmode.unit.embeddable.ContactEmbeddable;
+import com.smsmode.unit.embeddable.MediaRefEmbeddable;
 import com.smsmode.unit.model.base.AbstractBaseModel;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,9 +24,11 @@ import lombok.Setter;
 @Entity
 @Table(name = "X_IMAGE")
 public class ImageModel extends AbstractBaseModel {
-    private String fileName;
     private boolean cover = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private UnitModel unit;
+
+    @Embedded
+    private MediaRefEmbeddable media;
 }

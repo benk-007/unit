@@ -6,12 +6,13 @@ package com.smsmode.unit.controller;
 
 import com.smsmode.unit.resource.image.ImageGetResource;
 import com.smsmode.unit.resource.image.ImagePatchResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * TODO: add your documentation
@@ -25,11 +26,8 @@ public interface ImageController {
     @GetMapping
     ResponseEntity<Page<ImageGetResource>> getImageByUnitId(@RequestParam("unitId") String unitId, Pageable pageable);
 
-    @GetMapping("/{imageId}")
-    ResponseEntity<Resource> getImageById(@PathVariable String imageId);
-
     @PostMapping
-    ResponseEntity<ImageGetResource> postImageByUnitId(@RequestParam("unitId") String unitId, @RequestParam("file") MultipartFile file);
+    ResponseEntity<List<ImageGetResource>> postImageByUnitId(@RequestParam("unitId") String unitId, @RequestParam("files") MultipartFile[] files);
 
     @PatchMapping("/{imageId}")
     ResponseEntity<ImageGetResource> patchImageById(@PathVariable String imageId, @RequestBody ImagePatchResource imagePatchResource);

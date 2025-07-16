@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * TODO: add your documentation
  *
@@ -21,8 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UnitImageService {
 
     ResponseEntity<Page<ImageGetResource>> retrieveImages(String unitId, Pageable pageable);
-    ResponseEntity<Resource> retrieveImage(String imageId);
-    ResponseEntity<ImageGetResource> createImage(String unitId, MultipartFile file);
+
+    ResponseEntity<List<ImageGetResource>> createImage(String unitId, MultipartFile[] files);
 
     ResponseEntity<Void> removeById(String imageId);
 

@@ -24,6 +24,7 @@ import org.mapstruct.*;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class ImageMapper {
 
+    @Mappings({@Mapping(source = "media.uuid", target = "uuid")})
     public abstract ImageGetResource modelToImageGetResource(ImageModel image);
 
     @AfterMapping

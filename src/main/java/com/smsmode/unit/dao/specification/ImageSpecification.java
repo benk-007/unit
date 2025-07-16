@@ -33,4 +33,9 @@ public class ImageSpecification {
     public static Specification<ImageModel> withCover(boolean cover) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(ImageModel_.cover), cover);
     }
+
+    public static Specification<ImageModel> withUnit(UnitModel unit) {
+        return (root, query, cb) -> cb.equal(root.get("unit"), unit);
+    }
+
 }

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 /**
  * TODO: add your documentation
@@ -34,13 +35,8 @@ public class ImageControllerImpl implements ImageController {
     }
 
     @Override
-    public ResponseEntity<Resource> getImageById(String imageId) {
-        return unitImageService.retrieveImage(imageId);
-    }
-
-    @Override
-    public ResponseEntity<ImageGetResource> postImageByUnitId(String unitId, MultipartFile file) {
-        return unitImageService.createImage(unitId, file);
+    public ResponseEntity<List<ImageGetResource>> postImageByUnitId(String unitId, MultipartFile[] files) {
+        return unitImageService.createImage(unitId, files);
     }
 
     @Override
