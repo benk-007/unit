@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import com.smsmode.unit.model.UnitModel_;
 
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class UnitDaoServiceImpl implements UnitDaoService {
     @Override
     public List<UnitModel> findByParentUnit(UnitModel parent) {
         return unitRepository.findAll((root, query, cb) ->
-                cb.equal(root.get("parentUnit"), parent));
+                cb.equal(root.get(UnitModel_.parent), parent));
     }
 
     @Override
@@ -81,6 +82,4 @@ public class UnitDaoServiceImpl implements UnitDaoService {
     public void saveAll(List<UnitModel> subUnits) {
         unitRepository.saveAll(subUnits);
     }
-
-
 }

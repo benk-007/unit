@@ -14,6 +14,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * TODO: add your documentation
  *
@@ -25,4 +27,8 @@ public interface UnitRepository extends JpaRepository<UnitModel, String>, JpaSpe
     @Modifying
     @Query("UPDATE UnitModel u SET u.type = :type WHERE u.parent.id = :parentUnitId")
     void updateTypeByParentUnitId(@Param("parentUnitId") String parentUnitId, @Param("type") UnitTypeEnum type);
+
+    @Query("SELECT u.id FROM UnitModel u")
+    List<String> findAllUnitIds();
+
 }
