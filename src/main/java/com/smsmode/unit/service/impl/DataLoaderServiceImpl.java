@@ -27,83 +27,66 @@ public class DataLoaderServiceImpl implements DataLoaderService, CommandLineRunn
 
     private final UnitService unitService;
 
-    @Override
+/*    @Override
     public void populateUnits() {
         AddressEmbeddable address = new AddressEmbeddable();
         address.setCity("Marrakech");
         address.setCountry("MA");
-        address.setStreet1("Angle Avenue Mohammed VI, et Avenue Hassan II");
+        address.setStreet1("Avenue du Président Kennedy, Hivernage");
         address.setPostCode("40000");
 
-        UnitPostResource doubleVuePiscine = new UnitPostResource();
-        doubleVuePiscine.setName("Chambre Double Vue Piscine");
-        doubleVuePiscine.setNature(UnitNatureEnum.MULTI_UNIT);
-        doubleVuePiscine.setQuantity(40);
-        doubleVuePiscine.setSubUnitPrefix("DVP");
-        doubleVuePiscine.setAddress(address);
+        UnitPostResource doubleGarden = new UnitPostResource();
+        doubleGarden.setName("Deluxe Room, Double Bed, Garden View");
+        doubleGarden.setNature(UnitNatureEnum.MULTI_UNIT);
+        doubleGarden.setQuantity(4);
+        doubleGarden.setSubUnitPrefix("DR-DB-GV-");
+        doubleGarden.setAddress(address);
 
-        UnitPostResource doubleVueGare = new UnitPostResource();
-        doubleVueGare.setName("Chambre Double Vue Gare");
-        doubleVueGare.setNature(UnitNatureEnum.MULTI_UNIT);
-        doubleVueGare.setQuantity(30);
-        doubleVueGare.setSubUnitPrefix("DVG");
-        doubleVueGare.setAddress(address);
+        UnitPostResource doublePool = new UnitPostResource();
+        doublePool.setName("Deluxe Room, Double Bed, Pool View");
+        doublePool.setNature(UnitNatureEnum.MULTI_UNIT);
+        doublePool.setQuantity(7);
+        doublePool.setSubUnitPrefix("DR-DB-PV-");
+        doublePool.setAddress(address);
 
-        UnitPostResource suite = new UnitPostResource();
-        suite.setName("Suite");
-        suite.setNature(UnitNatureEnum.MULTI_UNIT);
-        suite.setQuantity(7);
-        suite.setSubUnitPrefix("ST");
-        suite.setAddress(address);
+        UnitPostResource doubleDeluxeGarden = new UnitPostResource();
+        doubleDeluxeGarden.setName("Premium Room, Double Bed, Balcony Garden View");
+        doubleDeluxeGarden.setNature(UnitNatureEnum.MULTI_UNIT);
+        doubleDeluxeGarden.setQuantity(5);
+        doubleDeluxeGarden.setSubUnitPrefix("PR-DB-BGV-");
+        doubleDeluxeGarden.setAddress(address);
 
-        unitService.create(doubleVuePiscine);
-        unitService.create(doubleVueGare);
-        unitService.create(suite);
+        UnitPostResource doubleDeluxePool = new UnitPostResource();
+        doubleDeluxePool.setName("Premium Room, Double Bed, Balcony Pool View");
+        doubleDeluxePool.setNature(UnitNatureEnum.MULTI_UNIT);
+        doubleDeluxePool.setQuantity(4);
+        doubleDeluxePool.setSubUnitPrefix("PR-DB-BPV-");
+        doubleDeluxePool.setAddress(address);
 
-    }
+        UnitPostResource suitePool = new UnitPostResource();
+        suitePool.setName("Junior Suite, King Size Bed, Pool View");
+        suitePool.setNature(UnitNatureEnum.MULTI_UNIT);
+        suitePool.setQuantity(2);
+        suitePool.setSubUnitPrefix("JS-KSB-PV-");
+        suitePool.setAddress(address);
 
-/*    @Override
-    public void populateDefaultRate(UnitModel unitModel) {
-        RateEmbeddable rate = new RateEmbeddable();
-        BasePricingEmbeddable basePricing = new BasePricingEmbeddable();
-        basePricing.setNightly(BigDecimal.valueOf(250));
-        basePricing.setWeekendNight(BigDecimal.valueOf(300));
-        basePricing.setWeekly(BigDecimal.valueOf(1700));
-        basePricing.setMonthly(BigDecimal.valueOf(7000));
-        basePricing.setMinStay(1);
-        basePricing.setMaxStay(31);
-        rate.setBasePricing(basePricing);
-        unitModel.setDefaultRate(rate);
-        unitDaoService.save(unitModel);
-    }
+        UnitPostResource suiteDeluxePool = new UnitPostResource();
+        suiteDeluxePool.setName("Premium Suite, King Size Bed, Pool View");
+        suiteDeluxePool.setNature(UnitNatureEnum.SINGLE);
+        suiteDeluxePool.setAddress(address);
 
-    @Override
-    public void populateRatesTable(UnitModel unitModel) {
-        RatesTableModel ratesTableModel = new RatesTableModel();
-        ratesTableModel.setName("Aid rates");
-        ratesTableModel.setStartDate(LocalDate.now());
-        ratesTableModel.setEndDate(LocalDate.now().plusDays(10));
-        ratesTableModel.setUnit(unitModel);
-        RateEmbeddable rate = new RateEmbeddable();
-        BasePricingEmbeddable basePricing = new BasePricingEmbeddable();
-        basePricing.setNightly(BigDecimal.valueOf(400));
-        basePricing.setWeekendNight(BigDecimal.valueOf(450));
-        basePricing.setMinStay(1);
-        rate.setBasePricing(basePricing);
-        ratesTableModel.setRate(rate);
+        unitService.create(doubleGarden);
+        unitService.create(doublePool);
+        unitService.create(doubleDeluxeGarden);
+        unitService.create(doubleDeluxePool);
+        unitService.create(suitePool);
+        unitService.create(suiteDeluxePool);
 
-        Set<DaySpecificPricingEmbeddable> daySpecificPricings = new HashSet<DaySpecificPricingEmbeddable>();
-        daySpecificPricings.add(new DaySpecificPricingEmbeddable(Set.of(DayOfWeek.THURSDAY), BigDecimal.valueOf(500), null, null));
-        daySpecificPricings.add(new DaySpecificPricingEmbeddable(Set.of(DayOfWeek.THURSDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY), BigDecimal.valueOf(550), null, null));
-
-        ratesTableModel.setDaySpecificPrices(daySpecificPricings);
-
-        ratesTableDaoService.save(ratesTableModel);
     }*/
 
     @Override
     public void run(String... args) throws Exception {
-        this.populateUnits();
+//        this.populateUnits();
     }
 
 }

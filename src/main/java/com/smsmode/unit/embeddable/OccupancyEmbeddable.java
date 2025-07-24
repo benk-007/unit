@@ -24,5 +24,4 @@ import lombok.Setter;
 public class OccupancyEmbeddable {
     private int adults=2;
     private int children=0;
-    private int infants=0;
 }

@@ -60,9 +60,7 @@ public class UnitModel extends AbstractBaseModel {
             @AttributeOverride(name = "adults",
                     column = @Column(name = "MIN_ADULTS")),
             @AttributeOverride(name = "children",
-                    column = @Column(name = "MIN_CHILDREN")),
-            @AttributeOverride(name = "infants",
-                    column = @Column(name = "MIN_INFANTS"))
+                    column = @Column(name = "MIN_CHILDREN"))
     })
     private OccupancyEmbeddable minOccupancy = new OccupancyEmbeddable();
     @Embedded
@@ -70,9 +68,7 @@ public class UnitModel extends AbstractBaseModel {
             @AttributeOverride(name = "adults",
                     column = @Column(name = "MAX_ADULTS")),
             @AttributeOverride(name = "children",
-                    column = @Column(name = "MAX_CHILDREN")),
-            @AttributeOverride(name = "infants",
-                    column = @Column(name = "MAX_INFANTS"))
+                    column = @Column(name = "MAX_CHILDREN"))
     })
     private OccupancyEmbeddable maxOccupancy = new OccupancyEmbeddable();
 

@@ -4,8 +4,6 @@
  */
 package com.smsmode.unit.service;
 
-import com.smsmode.unit.model.UnitModel;
-
 /**
  * TODO: add your documentation
  *
@@ -14,9 +12,6 @@ import com.smsmode.unit.model.UnitModel;
  */
 public interface DataLoaderService {
 
-    void populateUnits();
+//    void populateUnits();
 
-/*    void populateDefaultRate(UnitModel unitModel);
-
-    void populateRatesTable(UnitModel unitModel);*/
 }
