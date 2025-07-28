@@ -9,12 +9,16 @@ import com.smsmode.unit.dao.service.RoomDaoService;
 import com.smsmode.unit.exception.ResourceNotFoundException;
 import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
 import com.smsmode.unit.model.RoomModel;
+import com.smsmode.unit.model.RoomModel_;
+import com.smsmode.unit.model.UnitModel_;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * TODO: add your documentation
@@ -58,5 +62,11 @@ public class RoomDaoServiceImpl implements RoomDaoService {
     @Override
     public void delete(RoomModel room) {
         roomRepository.delete(room);
+    }
+
+    @Override
+    public List<RoomModel> findByUnit(String unitId) {
+        return roomRepository.findAll((root, query, cb) ->
+                cb.equal(root.get(RoomModel_.unit).get(UnitModel_.id), unitId));
     }
 }
