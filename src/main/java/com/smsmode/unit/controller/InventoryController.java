@@ -13,6 +13,6 @@ import org.springframework.data.domain.Pageable;
 public interface InventoryController {
 
     @PostMapping
-    ResponseEntity<Page<InventoryGetResource>> getAvailability(@RequestBody InventoryPostResource request, Pageable pageable);
+    ResponseEntity<Page<InventoryGetResource>> getAvailability(@RequestBody InventoryPostResource inventoryPostResource, Pageable pageable);
 
 }

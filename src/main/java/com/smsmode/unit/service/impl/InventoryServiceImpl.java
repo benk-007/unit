@@ -1,5 +1,6 @@
 package com.smsmode.unit.service.impl;
 
+import com.smsmode.unit.dao.repository.UnitRepository;
 import com.smsmode.unit.dao.service.RoomDaoService;
 import com.smsmode.unit.dao.service.UnitDaoService;
 import com.smsmode.unit.embeddable.BedEmbeddable;
@@ -35,15 +36,16 @@ public class InventoryServiceImpl implements InventoryService {
     private final PricingFeignService pricingFeignService;
     private final RoomDaoService roomDaoService;
     private final BedMapper bedMapper;
+    private final UnitRepository unitRepository;
 
     @Override
-    public ResponseEntity<Page<InventoryGetResource>> getInventory(InventoryPostResource request, Pageable pageable) {
+    public ResponseEntity<Page<InventoryGetResource>> getInventory(InventoryPostResource inventoryPostResource, Pageable pageable) {
         log.info("Fetching reserved units from booking service...");
 
         // Step 1: Call booking service
         List<String> reservedUnitIds;
         try {
-            ResponseEntity<List<String>> response = bookingFeignService.getBookedUnits(request.getCheckinDate(), request.getCheckoutDate());
+            ResponseEntity<List<String>> response = bookingFeignService.getBookedUnits(inventoryPostResource.getCheckinDate(), inventoryPostResource.getCheckoutDate());
             reservedUnitIds = response.getBody();
             if (reservedUnitIds == null) reservedUnitIds = Collections.emptyList();
             log.info("Reserved unit IDs: {}", reservedUnitIds);
@@ -51,6 +53,9 @@ public class InventoryServiceImpl implements InventoryService {
             log.error("Failed to fetch reserved units", e);
             throw new RuntimeException("Booking service unavailable", e);
         }
+
+        String[] reservedUnitIdsArray = reservedUnitIds.toArray(new String[0]);
+        Page<UnitModel> availableUnitss = unitRepository.findAvailableUnits(reservedUnitIdsArray, pageable);
 
         Map<String, Long> reservationCount = reservedUnitIds.stream()
                 .collect(Collectors.groupingBy(id -> id, Collectors.counting()));
@@ -81,7 +86,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         // Step 3: Call pricing service
         List<String> unitIdsToPrice = availableUnits.stream().map(UnitModel::getId).toList();
-        PriceCalculationPostResource pricingRequest = buildPricingRequest(request, unitIdsToPrice);
+        PriceCalculationPostResource pricingRequest = buildPricingRequest(inventoryPostResource, unitIdsToPrice);
 
         ResponseEntity<List<UnitPricingGetResource>> pricingResponse = pricingFeignService.calculatePricing(pricingRequest);
         List<UnitPricingGetResource> pricedUnits = pricingResponse.getBody();

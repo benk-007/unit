@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 public interface InventoryService {
-    ResponseEntity<Page<InventoryGetResource>> getInventory(InventoryPostResource request, Pageable pageable);
+    ResponseEntity<Page<InventoryGetResource>> getInventory(InventoryPostResource inventoryPostResource, Pageable pageable);
 }

@@ -16,7 +16,7 @@ public class InventoryControllerImpl implements InventoryController {
     private final InventoryService inventoryService;
 
     @Override
-    public ResponseEntity<Page<InventoryGetResource>> getAvailability(InventoryPostResource request, Pageable pageable) {
-        return inventoryService.getInventory(request, pageable);
+    public ResponseEntity<Page<InventoryGetResource>> getAvailability(InventoryPostResource inventoryPostResource, Pageable pageable) {
+        return inventoryService.getInventory(inventoryPostResource, pageable);
     }
 }
