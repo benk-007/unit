@@ -2,12 +2,13 @@ package com.smsmode.unit.resource.inventory;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 public class PriceCalculationPostResource {
-    private String checkinDate;
-    private String checkoutDate;
+    private LocalDate checkinDate;
+    private LocalDate checkoutDate;
     private GuestsResource guests;
     private String segmentId;
     private String subSegmentId;

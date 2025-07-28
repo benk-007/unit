@@ -2,7 +2,6 @@ package com.smsmode.unit.service.impl;
 
 import com.smsmode.unit.dao.service.RoomDaoService;
 import com.smsmode.unit.dao.service.UnitDaoService;
-
 import com.smsmode.unit.embeddable.BedEmbeddable;
 import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.mapper.BedMapper;
@@ -23,8 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,20 +36,14 @@ public class InventoryServiceImpl implements InventoryService {
     private final RoomDaoService roomDaoService;
     private final BedMapper bedMapper;
 
-
-
     @Override
     public ResponseEntity<Page<InventoryGetResource>> getInventory(InventoryPostResource request, Pageable pageable) {
         log.info("Fetching reserved units from booking service...");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate checkin = LocalDate.parse(request.getCheckinDate(), formatter);
-        LocalDate checkout = LocalDate.parse(request.getCheckoutDate(), formatter);
-
         // Step 1: Call booking service
         List<String> reservedUnitIds;
         try {
-            ResponseEntity<List<String>> response = bookingFeignService.getReservedUnits(checkin, checkout);
+            ResponseEntity<List<String>> response = bookingFeignService.getBookedUnits(request.getCheckinDate(), request.getCheckoutDate());
             reservedUnitIds = response.getBody();
             if (reservedUnitIds == null) reservedUnitIds = Collections.emptyList();
             log.info("Reserved unit IDs: {}", reservedUnitIds);
