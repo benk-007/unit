@@ -1,5 +1,6 @@
-package com.smsmode.unit.resource.inventory;
+package com.smsmode.unit.resource.inventory.post;
 
+import com.smsmode.unit.resource.inventory.GuestsResource;
 import lombok.Data;
 
 import java.time.LocalDate;

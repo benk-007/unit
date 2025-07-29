@@ -4,7 +4,7 @@
  */
 package com.smsmode.unit.dao.repository;
 
-import com.smsmode.unit.dao.projection.AvailableUnitProjection;
+import com.smsmode.unit.dao.projection.UnitSubCountProjection;
 import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.model.UnitModel;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * TODO: add your documentation
@@ -37,27 +36,37 @@ public interface UnitRepository extends JpaRepository<UnitModel, String>, JpaSpe
 
     @Query(
             value = """
-    SELECT * FROM x_unit u
-    WHERE (
-        u.nature = 'SINGLE'
-        AND u.parent_id IS NULL
-        AND u.id NOT IN (:reservedIds)
-    )
-    OR (
-        u.nature = 'MULTI_UNIT'
-        AND (
-            SELECT COUNT(*) FROM x_unit su
-            WHERE su.parent_id = u.id
-        ) > (
-            SELECT COUNT(*) FROM unnest(CAST(:reservedIds AS varchar[])) AS booked_id
-            WHERE booked_id IN (
-                SELECT id FROM x_unit WHERE parent_id = u.id
-            )
-        )
-    )
-    """,
+                    SELECT * FROM x_unit u
+                    WHERE (
+                        u.nature = 'SINGLE'
+                        AND u.readiness = true
+                        AND u.parent_id IS NULL
+                        AND u.id NOT IN (:reservedIds)
+                    )
+                    OR (
+                        u.nature = 'MULTI_UNIT'
+                        AND u.readiness = true
+                        AND ( SELECT COUNT(*) FROM x_unit su
+                            WHERE su.parent_id = u.id 
+                            AND su.readiness = true ) > (
+                            SELECT COUNT(*) FROM (
+                                SELECT unnest(CAST(:reservedIds AS varchar[])) AS booked_parent_id
+                            ) AS booking_count
+                            WHERE booking_count.booked_parent_id = u.id
+                        )
+                    )
+                    """,
             nativeQuery = true
     )
     Page<UnitModel> findAvailableUnits(@Param("reservedIds") String[] reservedIds, Pageable pageable);
 
+    @Query("""
+            SELECT u.id AS unitId, COUNT(su.id) AS subUnitCount
+            FROM UnitModel su
+            JOIN su.parent u
+            WHERE u.id IN :unitIds
+            AND su.readiness = true
+            GROUP BY u.id
+            """)
+    List<UnitSubCountProjection> countSubUnitsFor(@Param("unitIds") List<String> unitIds);
 }

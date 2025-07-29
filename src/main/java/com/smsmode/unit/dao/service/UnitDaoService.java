@@ -4,6 +4,7 @@
  */
 package com.smsmode.unit.dao.service;
 
+import com.smsmode.unit.dao.projection.UnitSubCountProjection;
 import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.model.UnitModel;
 import org.springframework.data.domain.Page;
@@ -32,4 +33,9 @@ public interface UnitDaoService {
     void updateTypeByParentUnitId(String id, UnitTypeEnum type);
 
     void saveAll(List<UnitModel> subUnits);
+
+    Page<UnitModel> findAvailableUnits(String[] reservedUnitIdsArray, Pageable pageable);
+
+    List<UnitSubCountProjection> countSubUnitsForMultiUnits(List<String> multiUnitIds);
+
 }

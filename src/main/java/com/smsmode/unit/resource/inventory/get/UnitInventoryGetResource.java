@@ -1,24 +1,21 @@
-package com.smsmode.unit.resource.inventory;
+package com.smsmode.unit.resource.inventory.get;
 
+import com.smsmode.unit.embeddable.BedEmbeddable;
 import com.smsmode.unit.enumeration.BedTypeEnum;
+import com.smsmode.unit.enumeration.UnitNatureEnum;
+import com.smsmode.unit.resource.inventory.NightRatesResource;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class InventoryGetResource {
+public class UnitInventoryGetResource {
     private String id;
     private String name;
-    private Inventory inventory;
+    private UnitNatureEnum nature;
+    private AvailabilityGetResource availability;
+    private List<BedEmbeddable> beds;
     private Price price;
-    private List<BedResource> bedding;
-    private int occupancy;   // Placeholder
-
-    @Data
-    public static class Inventory {
-        private int availableCount;
-        private int totalCount;
-    }
 
     @Data
     public static class Price {

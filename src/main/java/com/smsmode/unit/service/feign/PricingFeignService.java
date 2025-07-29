@@ -1,7 +1,6 @@
 package com.smsmode.unit.service.feign;
 
 
-import com.smsmode.unit.resource.inventory.InventoryGetResource;
 import com.smsmode.unit.resource.inventory.PriceCalculationPostResource;
 import com.smsmode.unit.resource.inventory.UnitPricingGetResource;
 import org.springframework.cloud.openfeign.FeignClient;

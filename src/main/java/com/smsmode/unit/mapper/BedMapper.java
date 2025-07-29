@@ -3,7 +3,7 @@ package com.smsmode.unit.mapper;
 
 import java.util.List;
 import com.smsmode.unit.embeddable.BedEmbeddable;
-import com.smsmode.unit.resource.inventory.InventoryGetResource.BedResource;
+import com.smsmode.unit.resource.inventory.get.UnitInventoryGetResource.BedResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 

@@ -4,12 +4,14 @@
  */
 package com.smsmode.unit.dao.service.impl;
 
+import com.smsmode.unit.dao.projection.UnitSubCountProjection;
 import com.smsmode.unit.dao.repository.UnitRepository;
 import com.smsmode.unit.dao.service.UnitDaoService;
 import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.exception.ResourceNotFoundException;
 import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
 import com.smsmode.unit.model.UnitModel;
+import com.smsmode.unit.model.UnitModel_;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import com.smsmode.unit.model.UnitModel_;
 
 import java.util.List;
 
@@ -81,5 +82,15 @@ public class UnitDaoServiceImpl implements UnitDaoService {
     @Transactional
     public void saveAll(List<UnitModel> subUnits) {
         unitRepository.saveAll(subUnits);
+    }
+
+    @Override
+    public Page<UnitModel> findAvailableUnits(String[] reservedUnitIdsArray, Pageable pageable) {
+        return unitRepository.findAvailableUnits(reservedUnitIdsArray, pageable);
+    }
+
+    @Override
+    public List<UnitSubCountProjection> countSubUnitsForMultiUnits(List<String> multiUnitIds) {
+        return unitRepository.countSubUnitsFor(multiUnitIds);
     }
 }

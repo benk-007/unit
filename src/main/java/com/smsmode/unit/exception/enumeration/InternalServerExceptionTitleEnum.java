@@ -16,7 +16,8 @@ public enum InternalServerExceptionTitleEnum implements BaseExceptionEnum {
     /**
      * Not authorized exception title.
      */
-    FILE_UPLOAD("UNT_INT_SRV_ERR_1");
+    FILE_UPLOAD("UNT_INT_SRV_ERR_1"),
+    SERVICE_UNAVAILABLE("UNT_INT_SRV_ERR_2");
 
 
     private final String code;

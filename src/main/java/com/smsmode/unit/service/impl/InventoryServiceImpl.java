@@ -1,29 +1,31 @@
 package com.smsmode.unit.service.impl;
 
-import com.smsmode.unit.dao.repository.UnitRepository;
+import com.smsmode.unit.dao.projection.UnitSubCountProjection;
 import com.smsmode.unit.dao.service.RoomDaoService;
 import com.smsmode.unit.dao.service.UnitDaoService;
-import com.smsmode.unit.embeddable.BedEmbeddable;
 import com.smsmode.unit.enumeration.UnitNatureEnum;
+import com.smsmode.unit.exception.InternalServerException;
+import com.smsmode.unit.exception.enumeration.InternalServerExceptionTitleEnum;
 import com.smsmode.unit.mapper.BedMapper;
-import com.smsmode.unit.model.RoomModel;
+import com.smsmode.unit.mapper.UnitMapper;
 import com.smsmode.unit.model.UnitModel;
-import com.smsmode.unit.resource.inventory.InventoryGetResource;
-import com.smsmode.unit.resource.inventory.InventoryPostResource;
 import com.smsmode.unit.resource.inventory.PriceCalculationPostResource;
-import com.smsmode.unit.resource.inventory.UnitPricingGetResource;
+import com.smsmode.unit.resource.inventory.get.AvailabilityGetResource;
+import com.smsmode.unit.resource.inventory.get.UnitInventoryGetResource;
+import com.smsmode.unit.resource.inventory.post.InventoryPostResource;
 import com.smsmode.unit.service.InventoryService;
 import com.smsmode.unit.service.feign.BookingFeignService;
 import com.smsmode.unit.service.feign.PricingFeignService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,10 +38,10 @@ public class InventoryServiceImpl implements InventoryService {
     private final PricingFeignService pricingFeignService;
     private final RoomDaoService roomDaoService;
     private final BedMapper bedMapper;
-    private final UnitRepository unitRepository;
+    private final UnitMapper unitMapper;
 
     @Override
-    public ResponseEntity<Page<InventoryGetResource>> getInventory(InventoryPostResource inventoryPostResource, Pageable pageable) {
+    public ResponseEntity<Page<UnitInventoryGetResource>> getInventory(InventoryPostResource inventoryPostResource, Pageable pageable) {
         log.info("Fetching reserved units from booking service...");
 
         // Step 1: Call booking service
@@ -51,41 +53,57 @@ public class InventoryServiceImpl implements InventoryService {
             log.info("Reserved unit IDs: {}", reservedUnitIds);
         } catch (Exception e) {
             log.error("Failed to fetch reserved units", e);
-            throw new RuntimeException("Booking service unavailable", e);
+            throw new InternalServerException(InternalServerExceptionTitleEnum.SERVICE_UNAVAILABLE, "Booking service unavailable");
         }
-
+        log.debug("Constructing array from reserved unit IDs ...");
         String[] reservedUnitIdsArray = reservedUnitIds.toArray(new String[0]);
-        Page<UnitModel> availableUnitss = unitRepository.findAvailableUnits(reservedUnitIdsArray, pageable);
-
-        Map<String, Long> reservationCount = reservedUnitIds.stream()
+        log.debug("Fetching available units from database based on readiness and reserved unit Ids array ...");
+        Page<UnitModel> availableUnits = unitDaoService.findAvailableUnits(reservedUnitIdsArray, pageable);
+        log.info("Retrieved {} units available", availableUnits.getTotalElements());
+        log.debug("Mapping models to unit inventory get resource ...");
+        Page<UnitInventoryGetResource> inventoryGetResources = availableUnits.map(unitMapper::modelToInventoryGetResource);
+        log.info("Mapping successful. Result contains: {}", inventoryGetResources.getTotalElements());
+        log.debug("Grouping reserved unit ids retrieved from booking service with count ...");
+        Map<String, Long> reservedUnitCountGrouped = reservedUnitIds.stream()
                 .collect(Collectors.groupingBy(id -> id, Collectors.counting()));
+        log.info("Grouping result: {}", reservedUnitCountGrouped);
+        log.debug("Filtering the available units to keep only ids of those with MULTI_UNIT nature ...");
+        List<String> multiUnitIds = availableUnits.getContent().stream()
+                .filter(unit -> UnitNatureEnum.MULTI_UNIT.equals(unit.getNature()))
+                .map(UnitModel::getId)
+                .toList();
+        log.info("Multi unit ids from your available units are: {}", multiUnitIds);
+        log.debug("Will retrieve how many sub-units each multi unit has from database ...");
+        List<UnitSubCountProjection> unitSubCountProjections = unitDaoService.countSubUnitsForMultiUnits(multiUnitIds);
+        log.info("Result of subUnitCount is: {}", unitSubCountProjections);
+        Map<String, Long> subUnitCountMap = unitSubCountProjections.stream()
+                .collect(Collectors.toMap(UnitSubCountProjection::getUnitId, UnitSubCountProjection::getSubUnitCount));
+        log.debug("Enrich each resource in the page with availability ...");
+        inventoryGetResources.forEach(resource -> {
+            log.debug("Resource with id:{} and name: {} ...", resource.getId(), resource.getName());
+            String unitId = resource.getId();
+            AvailabilityGetResource availability = new AvailabilityGetResource();
 
-        // Step 2: Get top-level units only (no parent)
-        List<UnitModel> topLevelUnits = unitDaoService.findAllBy(
-                (root, query, cb) -> cb.isNull(root.get("parent")),
-                Pageable.unpaged()
-        ).getContent();
-
-        List<UnitModel> availableUnits = new ArrayList<>();
-
-        for (UnitModel unit : topLevelUnits) {
-            if (unit.getNature() == UnitNatureEnum.SINGLE) {
-                if (!reservedUnitIds.contains(unit.getId())) {
-                    availableUnits.add(unit);
-                }
-            } else if (unit.getNature() == UnitNatureEnum.MULTI_UNIT) {
-                List<UnitModel> subUnits = unitDaoService.findByParentUnit(unit);
-                long reserved = reservationCount.getOrDefault(unit.getId(), 0L);
-                if (subUnits.size() > reserved) {
-                    availableUnits.add(unit);
-                }
+            if (UnitNatureEnum.MULTI_UNIT.equals(resource.getNature())) {
+                log.debug("Resource is of type MULTI_UNIT ...");
+                Long totalSubUnits = subUnitCountMap.getOrDefault(unitId, 0L);
+                Long reservedCount = reservedUnitCountGrouped.getOrDefault(unitId, 0L);
+                availability.setQuantity(totalSubUnits);
+                availability.setAvailable(Math.max(totalSubUnits - reservedCount, 0));
+                log.info("Availability after calculation is: {}", availability);
+            } else {
+                log.debug("Resource is of type SINGLE ...");
+                availability.setQuantity(1L);
+                availability.setAvailable(1L);
+                log.info("Availability is: {}", availability);
             }
-        }
+            log.debug("Setting availability to resource ...");
+            resource.setAvailability(availability);
+        });
 
-        log.info("Available units: {}", availableUnits.stream().map(UnitModel::getId).toList());
 
         // Step 3: Call pricing service
-        List<String> unitIdsToPrice = availableUnits.stream().map(UnitModel::getId).toList();
+        /*List<String> unitIdsToPrice = availableUnits.stream().map(UnitModel::getId).toList();
         PriceCalculationPostResource pricingRequest = buildPricingRequest(inventoryPostResource, unitIdsToPrice);
 
         ResponseEntity<List<UnitPricingGetResource>> pricingResponse = pricingFeignService.calculatePricing(pricingRequest);
@@ -97,16 +115,16 @@ public class InventoryServiceImpl implements InventoryService {
                 .collect(Collectors.toMap(UnitPricingGetResource::getId, p -> p));
 
         // Step 5: Map to InventoryGetResource
-        List<InventoryGetResource> finalResults = availableUnits.stream()
+        List<UnitInventoryGetResource> finalResults = availableUnits.stream()
                 .map(unit -> {
                     UnitPricingGetResource pricing = pricingMap.get(unit.getId());
                     if (pricing == null) return null;
 
-                    InventoryGetResource resource = new InventoryGetResource();
+                    UnitInventoryGetResource resource = new UnitInventoryGetResource();
                     resource.setId(unit.getId());
                     resource.setName(unit.getName());
 
-                    InventoryGetResource.Inventory inventory = new InventoryGetResource.Inventory();
+                    UnitInventoryGetResource.Inventory inventory = new UnitInventoryGetResource.Inventory();
                     if (unit.getNature() == UnitNatureEnum.SINGLE) {
                         // SINGLE units
                         inventory.setTotalCount(1);
@@ -123,7 +141,7 @@ public class InventoryServiceImpl implements InventoryService {
                     }
                     resource.setInventory(inventory);
 
-                    InventoryGetResource.Price price = new InventoryGetResource.Price();
+                    UnitInventoryGetResource.Price price = new UnitInventoryGetResource.Price();
                     price.setNightRates(pricing.getNightRates());
                     price.setNightlyRate(pricing.getNightlyRate());
                     price.setTotalAmount(pricing.getTotalAmount());
@@ -144,9 +162,9 @@ public class InventoryServiceImpl implements InventoryService {
                     return resource;
                 })
                 .filter(Objects::nonNull)
-                .toList();
+                .toList();*/
 
-        return ResponseEntity.ok(new PageImpl<>(finalResults, pageable, finalResults.size()));
+        return ResponseEntity.ok(inventoryGetResources);
 
     }
 

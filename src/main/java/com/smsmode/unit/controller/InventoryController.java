@@ -1,7 +1,7 @@
 package com.smsmode.unit.controller;
 
-import com.smsmode.unit.resource.inventory.InventoryGetResource;
-import com.smsmode.unit.resource.inventory.InventoryPostResource;
+import com.smsmode.unit.resource.inventory.get.UnitInventoryGetResource;
+import com.smsmode.unit.resource.inventory.post.InventoryPostResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +13,6 @@ import org.springframework.data.domain.Pageable;
 public interface InventoryController {
 
     @PostMapping
-    ResponseEntity<Page<InventoryGetResource>> getAvailability(@RequestBody InventoryPostResource inventoryPostResource, Pageable pageable);
+    ResponseEntity<Page<UnitInventoryGetResource>> getAvailability(@RequestBody InventoryPostResource inventoryPostResource, Pageable pageable);
 
 }
