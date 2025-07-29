@@ -4,9 +4,11 @@
  */
 package com.smsmode.unit.dao.service.impl;
 
+import com.smsmode.unit.dao.projection.FlatUnitBedProjection;
 import com.smsmode.unit.dao.projection.UnitSubCountProjection;
 import com.smsmode.unit.dao.repository.UnitRepository;
 import com.smsmode.unit.dao.service.UnitDaoService;
+import com.smsmode.unit.enumeration.RoomTypeEnum;
 import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.exception.ResourceNotFoundException;
 import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
@@ -92,5 +94,10 @@ public class UnitDaoServiceImpl implements UnitDaoService {
     @Override
     public List<UnitSubCountProjection> countSubUnitsForMultiUnits(List<String> multiUnitIds) {
         return unitRepository.countSubUnitsFor(multiUnitIds);
+    }
+
+    @Override
+    public List<FlatUnitBedProjection> findUnitBeds(List<String> unitIds, List<RoomTypeEnum> roomTypes) {
+        return unitRepository.findUnitBeds(unitIds, roomTypes);
     }
 }

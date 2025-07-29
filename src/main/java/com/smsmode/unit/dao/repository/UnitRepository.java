@@ -4,7 +4,9 @@
  */
 package com.smsmode.unit.dao.repository;
 
+import com.smsmode.unit.dao.projection.FlatUnitBedProjection;
 import com.smsmode.unit.dao.projection.UnitSubCountProjection;
+import com.smsmode.unit.enumeration.RoomTypeEnum;
 import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.model.UnitModel;
 import org.springframework.data.domain.Page;
@@ -69,4 +71,15 @@ public interface UnitRepository extends JpaRepository<UnitModel, String>, JpaSpe
             GROUP BY u.id
             """)
     List<UnitSubCountProjection> countSubUnitsFor(@Param("unitIds") List<String> unitIds);
+
+    @Query("""
+            SELECT r.unit.id AS unitId, b AS bed
+            FROM RoomModel r JOIN r.beds b
+            WHERE r.unit.id IN :unitIds
+            AND r.type IN :roomTypes
+            """)
+    List<FlatUnitBedProjection> findUnitBeds(
+            @Param("unitIds") List<String> unitIds,
+            @Param("roomTypes") List<RoomTypeEnum> roomTypes
+    );
 }

@@ -1,14 +1,17 @@
 package com.smsmode.unit.service.impl;
 
+import com.smsmode.unit.dao.projection.FlatUnitBedProjection;
 import com.smsmode.unit.dao.projection.UnitSubCountProjection;
 import com.smsmode.unit.dao.service.RoomDaoService;
 import com.smsmode.unit.dao.service.UnitDaoService;
+import com.smsmode.unit.embeddable.BedEmbeddable;
+import com.smsmode.unit.enumeration.RoomTypeEnum;
 import com.smsmode.unit.enumeration.UnitNatureEnum;
 import com.smsmode.unit.exception.InternalServerException;
 import com.smsmode.unit.exception.enumeration.InternalServerExceptionTitleEnum;
-import com.smsmode.unit.mapper.BedMapper;
 import com.smsmode.unit.mapper.UnitMapper;
 import com.smsmode.unit.model.UnitModel;
+import com.smsmode.unit.model.base.AbstractBaseModel;
 import com.smsmode.unit.resource.inventory.PriceCalculationPostResource;
 import com.smsmode.unit.resource.inventory.get.AvailabilityGetResource;
 import com.smsmode.unit.resource.inventory.get.UnitInventoryGetResource;
@@ -27,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -37,7 +41,6 @@ public class InventoryServiceImpl implements InventoryService {
     private final UnitDaoService unitDaoService;
     private final PricingFeignService pricingFeignService;
     private final RoomDaoService roomDaoService;
-    private final BedMapper bedMapper;
     private final UnitMapper unitMapper;
 
     @Override
@@ -78,7 +81,18 @@ public class InventoryServiceImpl implements InventoryService {
         log.info("Result of subUnitCount is: {}", unitSubCountProjections);
         Map<String, Long> subUnitCountMap = unitSubCountProjections.stream()
                 .collect(Collectors.toMap(UnitSubCountProjection::getUnitId, UnitSubCountProjection::getSubUnitCount));
-        log.debug("Enrich each resource in the page with availability ...");
+        log.debug("Filter available unit models to retrieve list of their ids ...");
+        List<String> availableUnitIds = availableUnits.map(AbstractBaseModel::getId).stream().toList();
+        log.debug("Retrieve beds related to each unit of the resource from database ...");
+        List<FlatUnitBedProjection> flatResults = unitDaoService.findUnitBeds(availableUnitIds, Stream.of(RoomTypeEnum.BEDROOM, RoomTypeEnum.LIVING, RoomTypeEnum.GENERAL).toList());
+        log.info("Retrieved unit beds as flat results");
+        log.debug("Grouping beds by unitId ...");
+        Map<String, List<BedEmbeddable>> groupedBedsByUnit = flatResults.stream()
+                .collect(Collectors.groupingBy(
+                        FlatUnitBedProjection::getUnitId,
+                        Collectors.mapping(FlatUnitBedProjection::getBed, Collectors.toList())
+                ));
+        log.debug("Enrich each resource in the page with availability and beds ...");
         inventoryGetResources.forEach(resource -> {
             log.debug("Resource with id:{} and name: {} ...", resource.getId(), resource.getName());
             String unitId = resource.getId();
@@ -99,9 +113,9 @@ public class InventoryServiceImpl implements InventoryService {
             }
             log.debug("Setting availability to resource ...");
             resource.setAvailability(availability);
+            log.debug("Setting beds ...");
+            resource.setBeds(groupedBedsByUnit.getOrDefault(unitId, null));
         });
-
-
         // Step 3: Call pricing service
         /*List<String> unitIdsToPrice = availableUnits.stream().map(UnitModel::getId).toList();
         PriceCalculationPostResource pricingRequest = buildPricingRequest(inventoryPostResource, unitIdsToPrice);

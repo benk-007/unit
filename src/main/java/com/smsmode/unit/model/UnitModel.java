@@ -46,6 +46,7 @@ public class UnitModel extends AbstractBaseModel {
     private UnitNatureEnum nature = UnitNatureEnum.SINGLE;
     @Enumerated(EnumType.STRING)
     private UnitTypeEnum type;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private Integer travellerAge;
     private boolean childrenAllowed = true;
