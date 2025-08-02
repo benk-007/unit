@@ -45,9 +45,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public ResponseEntity<Page<UnitInventoryGetResource>> getInventory(InventoryPostResource inventoryPostResource, Pageable pageable) {
-        log.info("Fetching reserved units from booking service...");
-
-        // Step 1: Call booking service
+        log.debug("Fetching reserved units from booking service...");
         List<String> reservedUnitIds;
         try {
             ResponseEntity<List<String>> response = bookingFeignService.getBookedUnits(inventoryPostResource.getCheckinDate(), inventoryPostResource.getCheckoutDate());

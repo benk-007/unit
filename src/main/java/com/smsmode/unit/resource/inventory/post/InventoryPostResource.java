@@ -4,6 +4,7 @@ import com.smsmode.unit.resource.inventory.GuestsResource;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 public class InventoryPostResource {
@@ -12,4 +13,5 @@ public class InventoryPostResource {
     private GuestsResource guests;
     private String segmentId;
     private String subSegmentId;
+    Set<String> unitIds;
 }
