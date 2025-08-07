@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 /**
  * TODO: add your documentation
  *
@@ -27,4 +29,5 @@ public interface RoomDaoService {
 
     void delete(RoomModel room);
 
+    List<RoomModel> findByUnit(String unitId);
 }

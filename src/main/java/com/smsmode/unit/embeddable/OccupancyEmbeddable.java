@@ -22,6 +22,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OccupancyEmbeddable {
-    private int adults=2;
+    private int adults=1;
     private int children=0;
 }

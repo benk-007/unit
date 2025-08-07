@@ -4,12 +4,16 @@
  */
 package com.smsmode.unit.dao.service.impl;
 
+import com.smsmode.unit.dao.projection.FlatUnitBedProjection;
+import com.smsmode.unit.dao.projection.UnitSubCountProjection;
 import com.smsmode.unit.dao.repository.UnitRepository;
 import com.smsmode.unit.dao.service.UnitDaoService;
+import com.smsmode.unit.enumeration.RoomTypeEnum;
 import com.smsmode.unit.enumeration.UnitTypeEnum;
 import com.smsmode.unit.exception.ResourceNotFoundException;
 import com.smsmode.unit.exception.enumeration.ResourceNotFoundExceptionTitleEnum;
 import com.smsmode.unit.model.UnitModel;
+import com.smsmode.unit.model.UnitModel_;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +72,7 @@ public class UnitDaoServiceImpl implements UnitDaoService {
     @Override
     public List<UnitModel> findByParentUnit(UnitModel parent) {
         return unitRepository.findAll((root, query, cb) ->
-                cb.equal(root.get("parentUnit"), parent));
+                cb.equal(root.get(UnitModel_.parent), parent));
     }
 
     @Override
@@ -82,5 +86,18 @@ public class UnitDaoServiceImpl implements UnitDaoService {
         unitRepository.saveAll(subUnits);
     }
 
+    @Override
+    public Page<UnitModel> findAvailableUnits(String[] reservedUnitIdsArray, Pageable pageable) {
+        return unitRepository.findAvailableUnits(reservedUnitIdsArray, pageable);
+    }
 
+    @Override
+    public List<UnitSubCountProjection> countSubUnitsForMultiUnits(List<String> multiUnitIds) {
+        return unitRepository.countSubUnitsFor(multiUnitIds);
+    }
+
+    @Override
+    public List<FlatUnitBedProjection> findUnitBeds(List<String> unitIds, List<RoomTypeEnum> roomTypes) {
+        return unitRepository.findUnitBeds(unitIds, roomTypes);
+    }
 }

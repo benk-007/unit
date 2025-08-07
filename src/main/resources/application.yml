@@ -32,7 +32,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
   cloud:
     # ==================================================================

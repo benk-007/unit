@@ -7,6 +7,7 @@ package com.smsmode.unit.mapper;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.model.base.AbstractBaseModel;
 import com.smsmode.unit.resource.common.AuditGetResource;
+import com.smsmode.unit.resource.inventory.get.UnitInventoryGetResource;
 import com.smsmode.unit.resource.unit.UnitGetResource;
 import com.smsmode.unit.resource.unit.UnitInfosPatchResource;
 import com.smsmode.unit.resource.unit.UnitItemGetResource;
@@ -75,5 +76,5 @@ public abstract class UnitMapper {
 
     public abstract UnitModel detailsPatchResourceToModel(UnitDetailsPatchResource unitDetailsPatchResource, @MappingTarget UnitModel unit);
 
-
+    public abstract UnitInventoryGetResource modelToInventoryGetResource(UnitModel unitModel);
 }
