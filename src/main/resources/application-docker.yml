@@ -24,3 +24,4 @@ file:
   upload:
     root: ./Projects/xStay/upload-folder
     unit-image: ./units/:unitId/images
+    logo-image: ./properties/:propertyId/logo

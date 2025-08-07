@@ -90,4 +90,8 @@ public class UnitModel extends AbstractBaseModel {
         this.priority = priority;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROPERTY_ID")
+    private PropertyModel property;
+
 }

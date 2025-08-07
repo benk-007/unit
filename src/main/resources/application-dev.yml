@@ -18,3 +18,4 @@ server:
 file:
   upload:
     unit-image: units/:unitId/images
+    logo-image: ./properties/:propertyId/logo
