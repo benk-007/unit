@@ -15,4 +15,5 @@ public class PropertyPatchResource {
     private String timezone;
     private String currency;
     private UnitTypeEnum defaultUnitType;
+    private Boolean removeLogo;
 }

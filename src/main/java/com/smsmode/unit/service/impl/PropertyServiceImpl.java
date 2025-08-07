@@ -89,13 +89,14 @@ public class PropertyServiceImpl implements PropertyService {
         Specification<PropertyModel> spec = PropertySpecification.withIdEqual(id);
         PropertyModel existingProperty = propertyDaoService.findOneBy(spec);
 
-        if (logoFile != null && !logoFile.isEmpty()) {
+        if (logoFile == null && Boolean.TRUE.equals(patchResource.getRemoveLogo())) {
             if (existingProperty.getLogoId() != null && existingProperty.getLogoId().getUuid() != null) {
                 try {
                     mediaFeignService.deleteMediaById(existingProperty.getLogoId().getUuid());
-                    log.info("Deleted old logo for property {}", existingProperty.getId());
+                    existingProperty.setLogoId(null);
+                    log.info("Logo removed for property {}", existingProperty.getId());
                 } catch (Exception e) {
-                    log.warn("Failed to delete old logo for property {}. Proceeding with update.", existingProperty.getId(), e);
+                    log.warn("Failed to delete logo for property {}. Proceeding with update.", existingProperty.getId(), e);
                 }
             }
         }
@@ -103,12 +104,25 @@ public class PropertyServiceImpl implements PropertyService {
         PropertyModel updatedProperty = propertyMapper.patchResourceToModel(patchResource, existingProperty);
 
         if (logoFile != null && !logoFile.isEmpty()) {
+            if (existingProperty.getLogoId() != null && existingProperty.getLogoId().getUuid() != null) {
+                try {
+                    mediaFeignService.deleteMediaById(existingProperty.getLogoId().getUuid());
+                    log.info("Deleted old logo for property {}", existingProperty.getId());
+                } catch (Exception e) {
+                    log.warn("Failed to delete old logo for property {}. Proceeding with upload.", existingProperty.getId(), e);
+                }
+            }
+
             String filePath = propertyLogoPath.replace(":propertyId", existingProperty.getId());
-            ResponseEntity<List<MediaGetResource>> mediaResponse = mediaFeignService.uploadMedia(filePath, new MultipartFile[]{logoFile});
+            ResponseEntity<List<MediaGetResource>> mediaResponse =
+                    mediaFeignService.uploadMedia(filePath, new MultipartFile[]{logoFile});
             List<MediaGetResource> mediaList = mediaResponse.getBody();
 
             if (mediaList == null || mediaList.isEmpty()) {
-                throw new InternalServerException(InternalServerExceptionTitleEnum.FILE_UPLOAD, "Media upload failed.");
+                throw new InternalServerException(
+                        InternalServerExceptionTitleEnum.FILE_UPLOAD,
+                        "Media upload failed."
+                );
             }
 
             MediaRefEmbeddable logoRef = new MediaRefEmbeddable();
