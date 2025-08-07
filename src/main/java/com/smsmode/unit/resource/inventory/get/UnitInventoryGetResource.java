@@ -5,7 +5,7 @@ import com.smsmode.unit.embeddable.OccupancyEmbeddable;
 import com.smsmode.unit.enumeration.AmenityEnum;
 import com.smsmode.unit.enumeration.FloorSizeUnitEnum;
 import com.smsmode.unit.enumeration.UnitNatureEnum;
-import com.smsmode.unit.resource.inventory.NightRatesResource;
+import com.smsmode.unit.resource.pricing.UnitBookingRateGetResource;
 import lombok.Data;
 
 import java.util.List;
@@ -26,18 +26,6 @@ public class UnitInventoryGetResource {
     private boolean eventsAllowed = false;
     private boolean smokingAllowed = false;
     private boolean petsAllowed = false;
-
-
     private List<BedEmbeddable> beds;
-    private Price price;
-
-    @Data
-    public static class Price {
-        private List<NightRatesResource> nightRates;
-        private double nightlyRate;
-        private double totalAmount;
-        private int minStay;
-        private int maxStay;
-    }
-
+    private UnitBookingRateGetResource rate;
 }

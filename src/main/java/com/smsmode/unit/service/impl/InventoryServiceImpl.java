@@ -16,6 +16,8 @@ import com.smsmode.unit.resource.inventory.PriceCalculationPostResource;
 import com.smsmode.unit.resource.inventory.get.AvailabilityGetResource;
 import com.smsmode.unit.resource.inventory.get.UnitInventoryGetResource;
 import com.smsmode.unit.resource.inventory.post.InventoryPostResource;
+import com.smsmode.unit.resource.pricing.BookingPostResource;
+import com.smsmode.unit.resource.pricing.UnitBookingRateGetResource;
 import com.smsmode.unit.service.InventoryService;
 import com.smsmode.unit.service.feign.BookingFeignService;
 import com.smsmode.unit.service.feign.PricingFeignService;
@@ -115,6 +117,13 @@ public class InventoryServiceImpl implements InventoryService {
             resource.setBeds(groupedBedsByUnit.getOrDefault(unitId, null));
         });
         // Step 3: Call pricing service
+        BookingPostResource bookingPostResource = new BookingPostResource();
+        bookingPostResource.setCheckinDate(inventoryPostResource.getCheckinDate());
+        bookingPostResource.setCheckoutDate(inventoryPostResource.getCheckoutDate());
+        bookingPostResource.setGuests(inventoryPostResource.getGuests());
+//        bookingPostResource.set
+//        ResponseEntity<Map<String, UnitBookingRateGetResource>> unitBookingRates = pricingFeignService.postCalculate()
+
         /*List<String> unitIdsToPrice = availableUnits.stream().map(UnitModel::getId).toList();
         PriceCalculationPostResource pricingRequest = buildPricingRequest(inventoryPostResource, unitIdsToPrice);
 

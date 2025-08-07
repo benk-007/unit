@@ -9,7 +9,7 @@ import java.util.List;
 public class PriceCalculationPostResource {
     private LocalDate checkinDate;
     private LocalDate checkoutDate;
-    private GuestsResource guests;
+    private GuestsPostResource guests;
     private String segmentId;
     private String subSegmentId;
     private List<String> units;
