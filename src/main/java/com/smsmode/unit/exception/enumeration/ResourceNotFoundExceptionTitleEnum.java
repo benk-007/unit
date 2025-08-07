@@ -19,8 +19,8 @@ public enum ResourceNotFoundExceptionTitleEnum implements BaseExceptionEnum {
     UNIT_NOT_FOUND("UNT_RNF_ERR_1"),
     IMAGE_NOT_FOUND("UNT_RNF_ERR_2"),
     ROOM_NOT_FOUND("UNT_RNF_ERR_3"),
-    RATE_NOT_FOUND("UNT_RNF_ERR_4");
-
+    RATE_NOT_FOUND("UNT_RNF_ERR_4"),
+    PROPERTY_NOT_FOUND("UNT_RNF_ERR_5");
 
     private final String code;
 

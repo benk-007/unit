@@ -4,6 +4,7 @@ import com.smsmode.unit.model.PropertyModel;
 import com.smsmode.unit.model.base.AbstractBaseModel;
 import com.smsmode.unit.resource.common.AuditGetResource;
 import com.smsmode.unit.resource.property.PropertyGetResource;
+import com.smsmode.unit.resource.property.PropertyPatchResource;
 import com.smsmode.unit.resource.property.PropertyPostResource;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
@@ -21,6 +22,8 @@ public abstract class PropertyMapper {
     @Mapping(target = "logoId", source = "logoId.uuid")
     public abstract PropertyGetResource modelToGetResource(PropertyModel model);
 
+    @Mapping(target = "id", ignore = true)
+    public abstract PropertyModel patchResourceToModel(PropertyPatchResource propertyPatchResource, @MappingTarget PropertyModel propertyModel);
 
     public abstract AuditGetResource modelToAuditResource(AbstractBaseModel baseModel);
 
