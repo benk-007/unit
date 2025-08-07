@@ -13,11 +13,13 @@ import com.smsmode.unit.mapper.UnitMapper;
 import com.smsmode.unit.model.UnitModel;
 import com.smsmode.unit.model.base.AbstractBaseModel;
 import com.smsmode.unit.resource.inventory.PriceCalculationPostResource;
+import com.smsmode.unit.resource.inventory.UnitPricingGetResource;
 import com.smsmode.unit.resource.inventory.get.AvailabilityGetResource;
 import com.smsmode.unit.resource.inventory.get.UnitInventoryGetResource;
 import com.smsmode.unit.resource.inventory.post.InventoryPostResource;
 import com.smsmode.unit.resource.pricing.BookingPostResource;
 import com.smsmode.unit.resource.pricing.UnitBookingRateGetResource;
+import com.smsmode.unit.resource.pricing.UnitOccupancyPostResource;
 import com.smsmode.unit.service.InventoryService;
 import com.smsmode.unit.service.feign.BookingFeignService;
 import com.smsmode.unit.service.feign.PricingFeignService;
@@ -28,9 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -121,82 +122,28 @@ public class InventoryServiceImpl implements InventoryService {
         bookingPostResource.setCheckinDate(inventoryPostResource.getCheckinDate());
         bookingPostResource.setCheckoutDate(inventoryPostResource.getCheckoutDate());
         bookingPostResource.setGuests(inventoryPostResource.getGuests());
-//        bookingPostResource.set
-//        ResponseEntity<Map<String, UnitBookingRateGetResource>> unitBookingRates = pricingFeignService.postCalculate()
-
-        /*List<String> unitIdsToPrice = availableUnits.stream().map(UnitModel::getId).toList();
-        PriceCalculationPostResource pricingRequest = buildPricingRequest(inventoryPostResource, unitIdsToPrice);
-
-        ResponseEntity<List<UnitPricingGetResource>> pricingResponse = pricingFeignService.calculatePricing(pricingRequest);
-        List<UnitPricingGetResource> pricedUnits = pricingResponse.getBody();
-        if (pricedUnits == null) pricedUnits = Collections.emptyList();
-
-        // Step 4: Index pricing results
-        Map<String, UnitPricingGetResource> pricingMap = pricedUnits.stream()
-                .collect(Collectors.toMap(UnitPricingGetResource::getId, p -> p));
-
-        // Step 5: Map to InventoryGetResource
-        List<UnitInventoryGetResource> finalResults = availableUnits.stream()
-                .map(unit -> {
-                    UnitPricingGetResource pricing = pricingMap.get(unit.getId());
-                    if (pricing == null) return null;
-
-                    UnitInventoryGetResource resource = new UnitInventoryGetResource();
-                    resource.setId(unit.getId());
-                    resource.setName(unit.getName());
-
-                    UnitInventoryGetResource.Inventory inventory = new UnitInventoryGetResource.Inventory();
-                    if (unit.getNature() == UnitNatureEnum.SINGLE) {
-                        // SINGLE units
-                        inventory.setTotalCount(1);
-                        inventory.setAvailableCount(1);
-                    } else {
-                        // MULTI_UNIT
-                        List<UnitModel> subUnits = unitDaoService.findByParentUnit(unit);
-                        int total = subUnits.size();
-                        long reserved = reservationCount.getOrDefault(unit.getId(), 0L);
-                        int available = Math.max(0, total - (int) reserved);
-
-                        inventory.setTotalCount(total);
-                        inventory.setAvailableCount(available);
-                    }
-                    resource.setInventory(inventory);
-
-                    UnitInventoryGetResource.Price price = new UnitInventoryGetResource.Price();
-                    price.setNightRates(pricing.getNightRates());
-                    price.setNightlyRate(pricing.getNightlyRate());
-                    price.setTotalAmount(pricing.getTotalAmount());
-                    price.setMinStay(pricing.getMinStay());
-                    price.setMaxStay(pricing.getMaxStay());
-                    resource.setPrice(price);
-
-
-                    List<RoomModel> rooms = roomDaoService.findByUnit(unit.getId());
-                    List<BedEmbeddable> beds = rooms.stream()
-                            .flatMap(room -> room.getBeds().stream())
-                            .toList();
-                    resource.setBedding(bedMapper.toResourceList(beds));
-
-
-                    resource.setOccupancy(0);
-
-                    return resource;
-                })
-                .filter(Objects::nonNull)
-                .toList();*/
-
+        bookingPostResource.setSegmentId(inventoryPostResource.getSegmentId());
+        bookingPostResource.setSubSegmentId(inventoryPostResource.getSubSegmentId());
+        bookingPostResource.setGlobalOccupancy(BigDecimal.valueOf(0));
+        Set<UnitOccupancyPostResource> unitOccupancyPostResources = new HashSet<>();
+        for (UnitModel unitModel : availableUnits.getContent()) {
+            UnitOccupancyPostResource unitOccupancyPostResource = new UnitOccupancyPostResource();
+            unitOccupancyPostResource.setId(unitModel.getId());
+            //TODO: set value of occupancy after calculation
+            unitOccupancyPostResource.setOccupancy(BigDecimal.valueOf(0));
+            unitOccupancyPostResources.add(unitOccupancyPostResource);
+        }
+        bookingPostResource.setUnits(unitOccupancyPostResources);
+        ResponseEntity<Map<String, UnitBookingRateGetResource>> pricingResponse = pricingFeignService.postCalculate(bookingPostResource);
+        if(pricingResponse.getStatusCode().is2xxSuccessful()){
+            log.debug("Enrich each resource in the page with rates and fees ...");
+            inventoryGetResources.forEach(resource -> {
+                log.debug("Resource with id:{} and name: {} ...", resource.getId(), resource.getName());
+                resource.setRate(pricingResponse.getBody().get(resource.getId()));
+            });
+        }
         return ResponseEntity.ok(inventoryGetResources);
 
     }
 
-    private PriceCalculationPostResource buildPricingRequest(InventoryPostResource originalRequest, List<String> unitIds) {
-        PriceCalculationPostResource pricingRequest = new PriceCalculationPostResource();
-        pricingRequest.setCheckinDate(originalRequest.getCheckinDate());
-        pricingRequest.setCheckoutDate(originalRequest.getCheckoutDate());
-        pricingRequest.setSegmentId(originalRequest.getSegmentId());
-        pricingRequest.setSubSegmentId(originalRequest.getSubSegmentId());
-        pricingRequest.setGuests(originalRequest.getGuests());
-        pricingRequest.setUnits(unitIds);
-        return pricingRequest;
-    }
 }
