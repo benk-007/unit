@@ -63,7 +63,7 @@ public class UnitModel extends AbstractBaseModel {
             @AttributeOverride(name = "children",
                     column = @Column(name = "MIN_CHILDREN"))
     })
-    private OccupancyEmbeddable minOccupancy = new OccupancyEmbeddable();
+    private OccupancyEmbeddable minOccupancy = new OccupancyEmbeddable(1,0);
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "adults",
@@ -71,18 +71,10 @@ public class UnitModel extends AbstractBaseModel {
             @AttributeOverride(name = "children",
                     column = @Column(name = "MAX_CHILDREN"))
     })
-    private OccupancyEmbeddable maxOccupancy = new OccupancyEmbeddable();
+    private OccupancyEmbeddable maxOccupancy = new OccupancyEmbeddable(2,0);
 
     @Convert(converter = AmenityEnumSetToStringConverter.class)
     private Set<AmenityEnum> amenities;
-
-    @Embedded
-    private RateEmbeddable defaultRate;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "X_UNIT_RATE", joinColumns = @JoinColumn(name = "UNIT_ID"),
-            inverseJoinColumns = @JoinColumn(name = "RATE_ID"))
-    private Set<RatesTableModel> rateTables = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
