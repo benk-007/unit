@@ -19,7 +19,4 @@ public class OccupancyGetResource {
 
     private int minChildren;
     private int maxChildren;
-
-    private int minInfants;
-    private int maxInfants;
 }
